@@ -2,6 +2,7 @@ package main
 
 import (
 	grpcInterceptor "comic/share/interceptor/grpc"
+	"comic/share/os/env"
 	"context"
 	"database/sql"
 	"log"
@@ -24,6 +25,11 @@ import (
 	"comic/auth/token"
 
 	controler "micro/auth/grpc"
+)
+
+var (
+	registryAddr = env.FormatEnvOrDefault("http://%s", "COMIC_REGISTRY_ADDR", "127.0.0.1:2379")
+	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", "127.0.0.1:3306")
 )
 
 const privateKey = `-----BEGIN RSA PRIVATE KEY-----
@@ -63,7 +69,7 @@ func main() {
 	}
 
 	reg := etcdv3.NewRegistry(func(op *registry.Options) {
-		op.Addrs = []string{"http://127.0.0.1:2379"}
+		op.Addrs = []string{registryAddr}
 	})
 
 	authWrapper := microInterceptor.NewAuthInterceptor(grpcInterceptor.NewAuthInterceptor())
@@ -84,7 +90,7 @@ func main() {
 	}
 
 	rawDB, err := sql.Open(
-		"mysql", "root:root@tcp(127.0.0.1:3306)/comic")
+		"mysql", mysqlDBAddr)
 	if err != nil {
 		logger.Fatal("cannot open sql connect", zap.Error(err))
 	}
