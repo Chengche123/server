@@ -1,8 +1,11 @@
 SETLOCAL
 
+SET FILE_PREFIX=%1%
+
 SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=amd64
-go build %1%
+
+go build -o %FILE_PREFIX%.out %FILE_PREFIX%.go
 
 ENDLOCAL

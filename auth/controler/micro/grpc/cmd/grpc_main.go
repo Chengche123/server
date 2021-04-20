@@ -28,7 +28,7 @@ import (
 )
 
 var (
-	registryAddr = env.FormatEnvOrDefault("http://%s", "COMIC_REGISTRY_ADDR", "127.0.0.1:2379")
+	registryAddr = env.FormatEnvOrDefault("%s", "COMIC_REGISTRY_ADDR", "127.0.0.1:2379")
 	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", "127.0.0.1:3306")
 )
 

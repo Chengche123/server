@@ -1,0 +1,1 @@
+docker run -e ALLOW_NONE_AUTHENTICATION=yes --name etcd -d bitnami/etcd:3.4.15
