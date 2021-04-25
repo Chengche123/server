@@ -14,7 +14,7 @@
 │      │      └─v1
 │      ├─grpc: grpc接口
 │      │  └─cmd: 启服务
-│      └─http: http接口
+│      └─http: bff接口
 │          └─cmd: 启服务
 ├─dao: 数据访问层
 │  ├─mongo
@@ -39,10 +39,9 @@ grpc网关
 <details>
 <summary>micro网关和注册中心 (micro-gateway文件夹)</summary>
 <pre><code>
-└─cmd
-    └─script: etcd启动脚本,micro网关和micro web界面启动脚本
-        ├─docker-demo
-        └─windows
+├─docker-compose: etcd micro-api和micro-web打包启动,方便本地开发
+│  └─etcd-micro
+└─script
 </code></pre>
 </details>
 
@@ -62,5 +61,24 @@ grpc网关
 │  └─test
 └─os
     └─env
+</code></pre>
+</details>
+
+<details>
+<summary>推荐服务 (recommend文件夹,一级目录仿open-bilibili)</summary>
+<pre><code>
+├─api: proto文件和pb
+│  └─grpc
+│      └─v1
+├─cmd: 启server
+│  ├─grpc
+│  └─http
+├─conf: 配置文件
+├─dao: 数据访问层
+├─model: model
+├─server: 接口暴露层
+│  ├─grpc
+│  └─http
+└─service: 业务逻辑层
 </code></pre>
 </details>

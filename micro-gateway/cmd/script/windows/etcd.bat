@@ -1,1 +1,0 @@
-E:\software\etcd\etcd-v3.2.32-windows-amd64\etcd-v3.2.32-windows-amd64\etcd.exe

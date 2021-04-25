@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package recommend.v1;
+
+option go_package = "./;v1";
+
+message RecReq {
+    int64 uid = 1;
+    string buvid = 2; // 设备id
+    int32 limit = 3; // 响应数量
+    int32 offset = 4; // 第几页
+    int64 comic_id = 5; // 漫画id
+    string query_id = 6; // 表示此次请求
+
+    // 以下字段暂时没卵用
+    string ab_test = 7; // ab测试
+    string trace_id = 8; // 服务追踪和监控
+    bool debug_flag = 9; // debug控制
+    string debug_type = 10; // debug类型
+    string app = 11; // 所用app
+    string app_version = 12; // app版本
+}
+
+message RecResponse {
+    repeated RecRecord list = 1;
+    map<string,string> metadata = 2;
+}
+
+message RecRecord {
+    int64 comic_id = 1;
+    double score = 2; // 权重
+    map<string,string> metadata = 3;
+}
+
+service RecService {
+    rpc Rec(RecReq) returns (RecResponse);
+    rpc RelatedRec(RecReq) returns (RecResponse);
+    rpc AuthorRec(RecReq) returns (RecResponse);
+}
+

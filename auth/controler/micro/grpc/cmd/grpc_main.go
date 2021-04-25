@@ -72,10 +72,9 @@ func main() {
 		op.Addrs = []string{registryAddr}
 	})
 
-	authWrapper := microInterceptor.NewAuthInterceptor(grpcInterceptor.NewAuthInterceptor())
+	_ = microInterceptor.NewAuthInterceptor(grpcInterceptor.NewAuthInterceptor())
 
 	service := micro.NewService(
-		micro.WrapHandler(authWrapper),
 		micro.Registry(reg),
 		micro.Name("go.micro.srv.comic.auth.v1"),
 		micro.RegisterTTL(time.Second*30),
