@@ -4,13 +4,17 @@ import (
 	"database/sql"
 	"fmt"
 
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+
+	_ "gorm.io/driver/mysql"
 )
 
 type RecRepository struct {
-	db *gorm.DB
+	logger *zap.Logger
+	db     *gorm.DB
 }
 
 func (r *RecRepository) Close() error {
@@ -21,7 +25,11 @@ func (r *RecRepository) Close() error {
 	return sqlDB.Close()
 }
 
-func NewRecRepository(raw *sql.DB) (*RecRepository, error) {
+func NewRecRepository(raw *sql.DB, logger *zap.Logger) (*RecRepository, error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger is nil")
+	}
+
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		Conn: raw,
 	}), &gorm.Config{
@@ -41,6 +49,24 @@ func NewRecRepository(raw *sql.DB) (*RecRepository, error) {
 	}
 
 	return &RecRepository{
-		db: db,
+		logger: logger,
+		db:     db,
 	}, nil
+}
+
+func NewRecRepositoryByDSN(dsn string, logger *zap.Logger) (*RecRepository, error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger is nil")
+	}
+
+	rawDB, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/comic")
+	if err != nil {
+		return nil, fmt.Errorf("cannot open sql connect: %v", err)
+	}
+	err = rawDB.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("failed to ping db: %v", err)
+	}
+
+	return NewRecRepository(rawDB, logger)
 }

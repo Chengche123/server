@@ -3,7 +3,7 @@ package model
 type Comic struct {
 	Id             int64
 	Title          string
-	Num            int64
+	Num            int64 // 热度
 	Types          string
 	Cover          string
 	LastUpdatetime int64

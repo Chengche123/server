@@ -51,9 +51,8 @@ grpc网关
 ├─auth
 │  └─token: token verifyer
 ├─interceptor: 中间件
-│  ├─grpc: grpc原生中间件
-│  └─micro: micro框架中间件,由grpc原生中间件适配而来
-│      └─interceptor
+│  └─micro: micro中间件
+│      └─auth: 取uid注入ctx
 ├─mongo
 │  ├─mgotesting
 │  └─util
@@ -71,14 +70,12 @@ grpc网关
 │  └─grpc
 │      └─v1
 ├─cmd: 启server
-│  ├─grpc
-│  └─http
+│  └─grpc: 直接暴露grpc服务
 ├─conf: 配置文件
 ├─dao: 数据访问层
 ├─model: model
 ├─server: 接口暴露层
-│  ├─grpc
-│  └─http
+│  └─grpc
 └─service: 业务逻辑层
 </code></pre>
 </details>

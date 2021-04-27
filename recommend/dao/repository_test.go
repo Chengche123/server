@@ -1,21 +1,18 @@
 package dao
 
 import (
-	"database/sql"
 	"testing"
 
+	"go.uber.org/zap"
 	_ "gorm.io/driver/mysql"
 
 	"rec-service/model"
 )
 
-func TestRepository(t *testing.T) {
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/comic")
-	if err != nil {
-		t.Fatal(err)
-	}
+func TestNewRepository(t *testing.T) {
+	logger, _ := zap.NewDevelopment()
 
-	repo, err := NewRecRepository(db)
+	repo, err := NewRecRepositoryByDSN("root:root@tcp(127.0.0.1:3306)/comic", logger)
 	if err != nil {
 		panic(err)
 	}

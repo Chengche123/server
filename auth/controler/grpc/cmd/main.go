@@ -7,7 +7,6 @@ import (
 	"comic/auth/service"
 	"comic/auth/token"
 	"comic/auth/wechat"
-	interceptor "comic/share/interceptor/grpc"
 	"context"
 	"database/sql"
 	"log"
@@ -67,9 +66,7 @@ func main() {
 		logger.Fatal("failed to listen", zap.Error(err))
 	}
 
-	gserver := grpc.NewServer(
-		grpc.UnaryInterceptor(interceptor.NewAuthInterceptor()),
-	)
+	gserver := grpc.NewServer()
 
 	openidResolver, err := mongo.NewMongoCol(
 		ctx,

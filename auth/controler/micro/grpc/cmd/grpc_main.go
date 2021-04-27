@@ -1,7 +1,6 @@
 package main
 
 import (
-	grpcInterceptor "comic/share/interceptor/grpc"
 	"comic/share/os/env"
 	"context"
 	"database/sql"
@@ -10,8 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	microInterceptor "interceptor-micro/interceptor"
 
 	authpb "micro/auth/api/gen/v1"
 
@@ -72,11 +69,9 @@ func main() {
 		op.Addrs = []string{registryAddr}
 	})
 
-	_ = microInterceptor.NewAuthInterceptor(grpcInterceptor.NewAuthInterceptor())
-
 	service := micro.NewService(
 		micro.Registry(reg),
-		micro.Name("go.micro.srv.comic.auth.v1"),
+		micro.Name("go.micro.api.comic.auth.v1"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(10*time.Second),
 	)

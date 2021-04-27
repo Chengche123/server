@@ -47,7 +47,7 @@ func (m *MySqlTable) FindOrAddUser(userName, password string) (accountID string,
 		userAccount.UserName = userName
 		hashedPwd, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		userAccount.Password = string(hashedPwd)
-		userAccount.AddTime = int(time.Now().Unix())
+		userAccount.AddTime = time.Now().Unix()
 		userAccount.Status = 1
 		if err := tx.Create(&userAccount).Error; err != nil {
 			return fmt.Errorf("cannot insert a row: %v", err)
