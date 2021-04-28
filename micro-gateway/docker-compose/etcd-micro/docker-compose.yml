@@ -1,6 +1,9 @@
-version: '3'
+version: '3.5'
 
 services: 
+##################
+## 网关和注册中心
+##################
   etcd: #etcd
     image: bitnami/etcd:3.4.15
     ports: 
@@ -17,9 +20,11 @@ services:
     environment: 
       MICRO_REGISTRY: etcd
       MICRO_REGISTRY_ADDRESS: etcd:2379
-    command: api # --handler=api
     networks: 
       - my-bridge
+    command: api # --handler=api
+    depends_on: 
+      - etcd
 
   micro-web: #micro web界面
     image: micro/micro:v2.9.3
@@ -28,9 +33,30 @@ services:
     environment: 
       MICRO_REGISTRY: etcd
       MICRO_REGISTRY_ADDRESS: etcd:2379
-    command: web
     networks: 
       - my-bridge
+    command: web
+    depends_on: 
+      - etcd
+##################
+## 认证服务
+##################
+  auth-service:
+    image: chengche123/dev-service-auth-grpc:1.0
+    environment: 
+      COMIC_REGISTRY_ADDR: etcd:2379
+      COMIC_MYSQL_ADDR: auth-db:3306
+    networks: 
+      - my-bridge
+    depends_on: 
+      - etcd
+      - auth-db
 
+  auth-db:
+    image: chengche123/dev-service-auth-db:1.0
+    networks: 
+      - my-bridge
+    
 networks: 
   my-bridge: 
+
