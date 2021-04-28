@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package comic.v1;
+
+option go_package = './;v1';
+
+message ListComicInfoRequest {
+    repeated int64 comic_ids = 1;
+}
+
+message ListComicInfoResponse {
+    repeated ComicInfo comics = 1;
+}
+
+message ComicInfo {
+    int64 id = 1;
+    string title = 2;
+    int64 num = 3;
+    string types = 4;
+    string cover = 5;
+    int64 last_updatetime = 6;
+    int32 is_end = 7;
+    string authors = 8;
+    int64 add_time = 9;
+    int32 status = 10;
+}
+
+service ComicService {
+    rpc ListComicInfo (ListComicInfoRequest) returns (ListComicInfoResponse);
+}
+
