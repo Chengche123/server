@@ -1,7 +1,8 @@
 FROM alpine:3.7
+LABEL maintainer="chengche123"
 
-COPY grpc_main.out /service/
+COPY main.out /service/
 
+# EXPOSE port
 
-
-ENTRYPOINT ["/service/grpc_main.out"]
+ENTRYPOINT ["/service/main.out"]

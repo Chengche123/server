@@ -13,7 +13,8 @@
 │      │  └─gen
 │      │      └─v1
 │      ├─grpc: grpc接口
-│      │  └─cmd: 启服务
+│      │  ├─cmd: 启服务,打镜像
+│      │  └─db: 打db测试镜像
 │      └─http: bff接口
 │          └─cmd: 启服务
 ├─dao: 数据访问层
@@ -52,7 +53,7 @@ grpc网关
 │  └─token: token verifyer
 ├─interceptor: 中间件
 │  └─micro: micro中间件
-│      └─auth: 取uid注入ctx
+│      └─auth: 从md取jwt验证,把uid注入ctx
 ├─mongo
 │  ├─mgotesting
 │  └─util
