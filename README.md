@@ -50,22 +50,26 @@ grpc网关
 <summary>common和util (share文件夹)</summary>
 <pre><code>
 ├─auth
-│  └─token: token verifyer
-├─interceptor: 中间件
+│  └─token: 验jwt
+├─database
+│  ├─gorm
+│  ├─mongo
+│  │  ├─mgotesting
+│  │  └─util
+│  └─mysql
+│      └─test
+├─interceptor
 │  └─micro: micro中间件
 │      └─auth: 从md取jwt验证,把uid注入ctx
-├─mongo
-│  ├─mgotesting
-│  └─util
-├─mysql
-│  └─test
+├─micro
+│  └─server
 └─os
     └─env
 </code></pre>
 </details>
 
 <details>
-<summary>推荐服务 (recommend文件夹,一级目录仿open-bilibili)</summary>
+<summary>推荐服务 (recommend文件夹)</summary>
 <pre><code>
 ├─api: proto文件和pb
 │  └─grpc
@@ -78,5 +82,23 @@ grpc网关
 ├─server: 接口暴露层
 │  └─grpc
 └─service: 业务逻辑层
+</code></pre>
+</details>
+
+<details>
+<summary>comic service(comic文件夹)</summary>
+<pre><code>
+├─api: 接口
+│  └─grpc
+│      └─v1
+├─cmd: 启server
+│  └─grpc
+├─conf: 配置
+├─dao: 数据访问层
+├─model: model
+├─server: 接口暴露层
+│  └─grpc
+└─service: 业务逻辑层
+    └─grpc
 </code></pre>
 </details>

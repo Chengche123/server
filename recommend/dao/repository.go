@@ -8,8 +8,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-
-	_ "gorm.io/driver/mysql"
 )
 
 type RecRepository struct {

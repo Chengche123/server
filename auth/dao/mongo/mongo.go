@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	util "comic/share/mongo/util"
+	util "comic/share/database/mongo/util"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

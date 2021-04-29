@@ -1,6 +1,6 @@
 package model
 
-type ComicInfo struct {
+type Comic struct {
 	Id             int64
 	Title          string
 	Num            int64

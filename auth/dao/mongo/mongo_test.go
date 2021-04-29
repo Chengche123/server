@@ -1,8 +1,8 @@
 package mongo
 
 import (
-	"comic/share/mongo/mgotesting"
-	util "comic/share/mongo/util"
+	"comic/share/database/mongo/mgotesting"
+	util "comic/share/database/mongo/util"
 	"context"
 	"os"
 	"testing"

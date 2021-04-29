@@ -1,7 +1,7 @@
 package repository
 
 import (
-	_ "comic/share/mysql/test"
+	_ "comic/share/database/mysql/test"
 	"context"
 	"database/sql"
 	"os"
