@@ -25,6 +25,7 @@ import (
 )
 
 var (
+	serviceName  = "go.micro.api.comic.auth.v1"
 	registryAddr = env.FormatEnvOrDefault("%s", "COMIC_REGISTRY_ADDR", "127.0.0.1:2379")
 	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", "127.0.0.1:3306")
 )
@@ -71,7 +72,7 @@ func main() {
 
 	service := micro.NewService(
 		micro.Registry(reg),
-		micro.Name("go.micro.api.comic.auth.v1"),
+		micro.Name(serviceName),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(10*time.Second),
 	)

@@ -1,34 +1,6 @@
-## 项目结构
-<details>
-<summary>auth service (auth文件夹)</summary>
-<pre><code>
-├─controler: 接口暴露层
-│  ├─grpc: grpc原生接口
-│  │  ├─api
-│  │  │  └─gen
-│  │  │      └─v1
-│  │  └─cmd: 启服务
-│  └─micro: micro框架接口
-│      ├─api
-│      │  └─gen
-│      │      └─v1
-│      ├─grpc: grpc接口
-│      │  ├─cmd: 启服务,打镜像
-│      │  └─db: 打db测试镜像
-│      └─http: bff接口
-│          └─cmd: 启服务
-├─dao: 数据访问层
-│  ├─mongo
-│  └─mysql
-│      ├─models
-│      ├─raw
-│      └─repository
-├─key: 认证服务公私钥
-├─service: 业务逻辑层
-├─token
-└─wechat
-</code></pre>
-</details>
+### 目录结构
+
+#### infra
 
 <details>
 <summary>grpc原生网关 (grpc-gateway文件夹)</summary>
@@ -68,6 +40,39 @@ grpc网关
 </code></pre>
 </details>
 
+#### 内部RPC基础服务
+
+<details>
+<summary>auth service (auth文件夹)</summary>
+<pre><code>
+├─controler: 接口暴露层
+│  ├─grpc: grpc原生接口
+│  │  ├─api
+│  │  │  └─gen
+│  │  │      └─v1
+│  │  └─cmd: 启服务
+│  └─micro: micro框架接口
+│      ├─api
+│      │  └─gen
+│      │      └─v1
+│      ├─grpc: grpc接口
+│      │  ├─cmd: 启服务,打镜像
+│      │  └─db: 打db测试镜像
+│      └─http: bff接口
+│          └─cmd: 启服务
+├─dao: 数据访问层
+│  ├─mongo
+│  └─mysql
+│      ├─models
+│      ├─raw
+│      └─repository
+├─key: 认证服务公私钥
+├─service: 业务逻辑层
+├─token
+└─wechat
+</code></pre>
+</details>
+
 <details>
 <summary>推荐服务 (recommend文件夹)</summary>
 <pre><code>
@@ -102,3 +107,6 @@ grpc网关
     └─grpc
 </code></pre>
 </details>
+
+#### BFF聚合服务
+
