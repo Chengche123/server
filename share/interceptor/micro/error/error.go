@@ -2,8 +2,9 @@ package interceptor
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	merrors "github.com/micro/go-micro/v2/errors"
 
 	zlog "comic/share/log/zap"
 
@@ -39,12 +40,9 @@ func (e *ErrorInterceptor) warpHandler(handler server.HandlerFunc) server.Handle
 
 			s, ok := status.FromError(err)
 			if ok {
-				ferr := &FaceFrontError{
-					StatusCode: uint32(s.Code()),
-					Message:    s.Message(),
-				}
-				bs, _ := json.Marshal(ferr)
-				return errors.New(string(bs))
+
+				httpCode := runtime.HTTPStatusFromCode(s.Code())
+				return merrors.New("", s.Message(), int32(httpCode))
 			}
 
 			e.logger.Info("get a invalid grpc error, please repaire", zap.String("invalid err", err.Error()))
