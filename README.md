@@ -32,7 +32,11 @@ grpc网关
 │      └─test
 ├─interceptor
 │  └─micro: micro中间件
-│      └─auth: 从md取jwt验证,把uid注入ctx
+│      ├─auth: 从md取jwt验证,把uid注入ctx
+│      └─error: 面向前端,统一错误
+├─key: 公钥
+├─log
+│  └─zap
 ├─micro
 │  └─server
 └─os

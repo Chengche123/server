@@ -46,9 +46,11 @@ func (*Service) Login(ctx context.Context, req *authpb.LoginRequest, res *authpb
 }
 
 func (s *Service) UserLogin(ctx context.Context, req *authpb.UserLoginRequest, res *authpb.LoginResponse) error {
+	s.Logger.Info("loggin", zap.String("user_name", req.UserName), zap.String("password", req.Password))
+
 	userBo, err := s.UserResolver.ResolveUser(ctx, req.UserName, req.Password)
 	if err != nil {
-		return status.Error(codes.PermissionDenied, "密码错误")
+		return status.Error(codes.Unauthenticated, "密码错误")
 	}
 
 	IUserBo, ok := userBo.(UserBo)

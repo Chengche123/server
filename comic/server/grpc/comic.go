@@ -6,6 +6,10 @@ import (
 
 	"comic/share/micro/server"
 
+	key "comic/share/key"
+	authInter "interceptor-micro/auth"
+	errInter "interceptor-micro/error"
+
 	"github.com/micro/go-micro/v2"
 )
 
@@ -19,7 +23,19 @@ func NewComicServer(comicService pb.ComicServiceHandler) (micro.Service, error) 
 		return nil, fmt.Errorf("cannot init server: %v", err)
 	}
 
-	service.Init()
+	authWrapper, err := authInter.NewAuthInterceptor(key.PubKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot init auth interceptor: %v", err)
+	}
+
+	errWrapper, err := errInter.NewErrorInterceptor()
+	if err != nil {
+		return nil, fmt.Errorf("cannot init error interceptor: %v", err)
+	}
+
+	service.Init(
+		micro.WrapHandler(authWrapper, errWrapper),
+	)
 
 	err = pb.RegisterComicServiceHandler(service.Server(), comicService)
 	if err != nil {

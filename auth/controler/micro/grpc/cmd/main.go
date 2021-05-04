@@ -22,6 +22,8 @@ import (
 	"comic/auth/token"
 
 	controler "micro/auth/grpc"
+
+	errInter "interceptor-micro/error"
 )
 
 var (
@@ -70,7 +72,13 @@ func main() {
 		op.Addrs = []string{registryAddr}
 	})
 
+	errorWrapper, err := errInter.NewErrorInterceptor()
+	if err != nil {
+		logger.Fatal("cannot init error interceptor", zap.Error(err))
+	}
+
 	service := micro.NewService(
+		micro.WrapHandler(errorWrapper),
 		micro.Registry(reg),
 		micro.Name(serviceName),
 		micro.RegisterTTL(time.Second*30),

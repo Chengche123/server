@@ -2,6 +2,7 @@ package dao
 
 import (
 	"comic-service/model"
+	"sync"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -18,14 +19,38 @@ func (r *ComicRepository) Close() error {
 }
 
 func (r *ComicRepository) GetComicInfos(ids []int64) ([]*model.Comic, error) {
+	var wg sync.WaitGroup
+	inch := make(chan int64, len(ids))
+	for _, id := range ids {
+		inch <- id
+	}
+	close(inch)
+	outch := make(chan *model.Comic)
+
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			for id := range inch {
+				rec, err := r.getComicInfo(id)
+				if err != nil {
+					continue
+				}
+				outch <- rec
+			}
+
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(outch)
+	}()
+
 	recs := make([]*model.Comic, 0, len(ids))
 
-	for _, id := range ids {
-		rec, err := r.getComicInfo(id)
-		if err != nil {
-			continue
-		}
-
+	for rec := range outch {
 		recs = append(recs, rec)
 	}
 

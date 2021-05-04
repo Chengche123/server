@@ -22,7 +22,7 @@ services:
       MICRO_REGISTRY_ADDRESS: etcd:2379
     networks: 
       - my-bridge
-    command: api # --handler=api
+    command: '--client_retries 0 api' # --handler=api
     depends_on: 
       - etcd
 
@@ -41,21 +41,21 @@ services:
 ##################
 ## 认证服务
 ##################
-  auth-service:
-    image: chengche123/dev-service-auth-grpc:1.0
-    environment: 
-      COMIC_REGISTRY_ADDR: etcd:2379
-      COMIC_MYSQL_ADDR: auth-db:3306
-    networks: 
-      - my-bridge
-    depends_on: 
-      - etcd
-      - auth-db
+  # auth-service:
+  #   image: chengche123/dev-service-auth-grpc:1.0
+  #   environment: 
+  #     COMIC_REGISTRY_ADDR: etcd:2379
+  #     COMIC_MYSQL_ADDR: auth-db:3306
+  #   networks: 
+  #     - my-bridge
+  #   depends_on: 
+  #     - etcd
+  #     - auth-db
 
-  auth-db:
-    image: chengche123/dev-service-auth-db:1.0
-    networks: 
-      - my-bridge
+  # auth-db:
+  #   image: chengche123/dev-service-auth-db:1.0
+  #   networks: 
+  #     - my-bridge
     
 networks: 
   my-bridge: 
