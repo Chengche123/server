@@ -3,13 +3,6 @@
 #### infra
 
 <details>
-<summary>grpc原生网关 (grpc-gateway文件夹)</summary>
-<pre><code>
-grpc网关
-</code></pre>
-</details>
-
-<details>
 <summary>micro网关和注册中心 (micro-gateway文件夹)</summary>
 <pre><code>
 ├─docker-compose: etcd micro-api和micro-web打包启动,方便本地开发
