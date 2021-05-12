@@ -2,6 +2,7 @@ package dao
 
 import (
 	"comic/share/database/gorm"
+	"comic/share/database/mysql/dsn"
 	"testing"
 
 	"go.uber.org/zap"
@@ -23,7 +24,7 @@ func TestGetComicInfos(t *testing.T) {
 }
 
 func newComicRepository() *ComicRepository {
-	db, err := gorm.NewMysqlGormByDSN("root:root@tcp(127.0.0.1:3306)/comic")
+	db, err := gorm.NewMysqlGormByDSN(dsn.DefaultDSN)
 	if err != nil {
 		panic(err)
 	}
