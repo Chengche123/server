@@ -34,6 +34,7 @@ func main() {
 		zlog.Logger.Error("", zap.Error(err))
 		return
 	}
+	defer userRepository.Close()
 
 	handler := &authService.AuthService{
 		UserRepository: userRepository,
