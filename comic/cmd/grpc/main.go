@@ -4,7 +4,8 @@ import (
 	"comic-service/dao"
 	server "comic-service/server/grpc"
 	grpc "comic-service/service/grpc"
-	"comic/share/database/gorm"
+	"comic/share/database/mysql/dsn"
+	log "comic/share/log/zap"
 	"comic/share/os/env"
 
 	"go.uber.org/zap"
@@ -16,22 +17,17 @@ import (
 )
 
 var (
-	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", "127.0.0.1:3306")
+	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", dsn.DefaultAddr)
 	graceTimeout = time.Second * 3
 )
 
 func main() {
-	logger, _ := zap.NewDevelopment()
+	logger := log.Logger
 
-	db, err := gorm.NewMysqlGormByDSN(mysqlDBAddr)
+	repo, err := dao.NewComicRepository(mysqlDBAddr)
 	if err != nil {
 		logger.Error("", zap.Error(err))
 		return
-	}
-
-	repo := &dao.ComicRepository{
-		Gorm:   db,
-		Logger: logger,
 	}
 
 	service := &grpc.ComicService{
