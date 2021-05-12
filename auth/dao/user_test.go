@@ -1,9 +1,7 @@
-package repository
+package dao
 
 import (
-	_ "comic/share/database/mysql/test"
-	"context"
-	"database/sql"
+	config "comic/share/config/database"
 	"os"
 	"testing"
 	"time"
@@ -14,14 +12,7 @@ import (
 var testDsn string
 
 func TestFindOrAddUser(t *testing.T) {
-	ctx := context.Background()
-
-	raw, err := sql.Open("mysql", testDsn)
-	if err != nil {
-		panic(err)
-	}
-
-	db, err := NewMySqlTable(ctx, raw)
+	db, err := NewUserRepository(config.DefaultMysqlDSN)
 	if err != nil {
 		panic(err.Error() + " dsn:" + testDsn)
 	}
