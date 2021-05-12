@@ -12,7 +12,7 @@ func NewMysqlGormByDSN(dsn string) (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		DSN: dsn,
 	}), &gorm.Config{
-		// Logger:                 logger.Default.LogMode(logger.Info),
+		//	Logger:                 logger.Default.LogMode(logger.Info),
 		PrepareStmt:            true,
 		SkipDefaultTransaction: true,
 		NamingStrategy: schema.NamingStrategy{
@@ -20,7 +20,7 @@ func NewMysqlGormByDSN(dsn string) (*gorm.DB, error) {
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("cannot init gorm object: %v", err)
+		return nil, fmt.Errorf("cannot init gorm db: %v", err)
 	}
 
 	return db, nil
