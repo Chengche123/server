@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	serverName = "go.micro.srv.comic.comic.v1"
+	serverName = "go.micro.api.comic.comic.v1"
 )
 
 func NewComicServer(comicService pb.ComicServiceHandler) (micro.Service, error) {

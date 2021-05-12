@@ -4,28 +4,55 @@ package comic.v1;
 
 option go_package = './;v1';
 
-message ListComicInfoRequest {
+message ListComicDetailRequest {
     repeated int64 comic_ids = 1;
 }
 
-message ListComicInfoResponse {
-    repeated ComicInfo comics = 1;
+message ListComicDetailResponse {
+    repeated ComicDetail comics = 1;
 }
 
-message ComicInfo {
+message ComicDetail {
+    int64 Id = 1;
+    string Title = 2;
+    int64 Direction = 3;
+    int64 Islong = 4;
+    string Cover = 5;
+    string Description = 6;
+    int64 LastUpdatetime = 7;
+    string LastUpdateChapterName = 8;
+    string FirstLetter = 9;
+    string ComicPy = 10;
+    int64 HotNum = 11;
+    int64 HitNum = 12;
+    int64 LastUpdateChapterId = 13;
+    int64 SubscribeNum = 14;
+}
+
+message ListCategoryDetailRequest {
+    string type = 1; // TODO: 更改为tag_ids
+    int32 sort = 2; // 0:人气排序 1:更新排序
+    int32 limit = 3;
+    int32 offset = 4;
+}
+
+message ListCategoryDetailResponse {
+    repeated CategoryDetail details = 1;
+}
+
+message CategoryDetail {
     int64 id = 1;
     string title = 2;
-    int64 num = 3;
-    string types = 4;
+    string authors = 3;
+    string status = 4;
     string cover = 5;
-    int64 last_updatetime = 6;
-    int32 is_end = 7;
-    string authors = 8;
-    int64 add_time = 9;
-    int32 status = 10;
+    string types = 6;
+    int64 last_updatetime = 7;
+    int64 num = 8;
 }
 
 service ComicService {
-    rpc ListComicInfo (ListComicInfoRequest) returns (ListComicInfoResponse);
+    rpc ListComicDetail (ListComicDetailRequest) returns (ListComicDetailResponse);
+    rpc ListCategoryDetail (ListCategoryDetailRequest) returns (ListCategoryDetailResponse);
 }
 

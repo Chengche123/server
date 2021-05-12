@@ -42,7 +42,8 @@ func NewComicServiceEndpoints() []*api.Endpoint {
 // Client API for ComicService service
 
 type ComicService interface {
-	ListComicInfo(ctx context.Context, in *ListComicInfoRequest, opts ...client.CallOption) (*ListComicInfoResponse, error)
+	ListComicDetail(ctx context.Context, in *ListComicDetailRequest, opts ...client.CallOption) (*ListComicDetailResponse, error)
+	ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, opts ...client.CallOption) (*ListCategoryDetailResponse, error)
 }
 
 type comicService struct {
@@ -57,9 +58,19 @@ func NewComicService(name string, c client.Client) ComicService {
 	}
 }
 
-func (c *comicService) ListComicInfo(ctx context.Context, in *ListComicInfoRequest, opts ...client.CallOption) (*ListComicInfoResponse, error) {
-	req := c.c.NewRequest(c.name, "ComicService.ListComicInfo", in)
-	out := new(ListComicInfoResponse)
+func (c *comicService) ListComicDetail(ctx context.Context, in *ListComicDetailRequest, opts ...client.CallOption) (*ListComicDetailResponse, error) {
+	req := c.c.NewRequest(c.name, "ComicService.ListComicDetail", in)
+	out := new(ListComicDetailResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *comicService) ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, opts ...client.CallOption) (*ListCategoryDetailResponse, error) {
+	req := c.c.NewRequest(c.name, "ComicService.ListCategoryDetail", in)
+	out := new(ListCategoryDetailResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +81,14 @@ func (c *comicService) ListComicInfo(ctx context.Context, in *ListComicInfoReque
 // Server API for ComicService service
 
 type ComicServiceHandler interface {
-	ListComicInfo(context.Context, *ListComicInfoRequest, *ListComicInfoResponse) error
+	ListComicDetail(context.Context, *ListComicDetailRequest, *ListComicDetailResponse) error
+	ListCategoryDetail(context.Context, *ListCategoryDetailRequest, *ListCategoryDetailResponse) error
 }
 
 func RegisterComicServiceHandler(s server.Server, hdlr ComicServiceHandler, opts ...server.HandlerOption) error {
 	type comicService interface {
-		ListComicInfo(ctx context.Context, in *ListComicInfoRequest, out *ListComicInfoResponse) error
+		ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error
+		ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, out *ListCategoryDetailResponse) error
 	}
 	type ComicService struct {
 		comicService
@@ -88,6 +101,10 @@ type comicServiceHandler struct {
 	ComicServiceHandler
 }
 
-func (h *comicServiceHandler) ListComicInfo(ctx context.Context, in *ListComicInfoRequest, out *ListComicInfoResponse) error {
-	return h.ComicServiceHandler.ListComicInfo(ctx, in, out)
+func (h *comicServiceHandler) ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error {
+	return h.ComicServiceHandler.ListComicDetail(ctx, in, out)
+}
+
+func (h *comicServiceHandler) ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, out *ListCategoryDetailResponse) error {
+	return h.ComicServiceHandler.ListCategoryDetail(ctx, in, out)
 }

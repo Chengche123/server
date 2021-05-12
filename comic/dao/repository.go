@@ -18,14 +18,14 @@ func (r *ComicRepository) Close() error {
 	return raw.Close()
 }
 
-func (r *ComicRepository) GetComicInfos(ids []int64) ([]*model.Comic, error) {
+func (r *ComicRepository) FindComicDetails(ids []int64) ([]*model.ComicDetail, error) {
 	var wg sync.WaitGroup
 	inch := make(chan int64, len(ids))
 	for _, id := range ids {
 		inch <- id
 	}
 	close(inch)
-	outch := make(chan *model.Comic)
+	outch := make(chan *model.ComicDetail)
 
 	for i := 0; i < 5; i++ {
 		wg.Add(1)
@@ -33,7 +33,7 @@ func (r *ComicRepository) GetComicInfos(ids []int64) ([]*model.Comic, error) {
 			defer wg.Done()
 
 			for id := range inch {
-				rec, err := r.getComicInfo(id)
+				rec, err := r.findComicDetail(id)
 				if err != nil {
 					continue
 				}
@@ -48,7 +48,7 @@ func (r *ComicRepository) GetComicInfos(ids []int64) ([]*model.Comic, error) {
 		close(outch)
 	}()
 
-	recs := make([]*model.Comic, 0, len(ids))
+	recs := make([]*model.ComicDetail, 0, len(ids))
 
 	for rec := range outch {
 		recs = append(recs, rec)
@@ -57,8 +57,8 @@ func (r *ComicRepository) GetComicInfos(ids []int64) ([]*model.Comic, error) {
 	return recs, nil
 }
 
-func (r *ComicRepository) getComicInfo(id int64) (*model.Comic, error) {
-	var rec model.Comic
+func (r *ComicRepository) findComicDetail(id int64) (*model.ComicDetail, error) {
+	var rec model.ComicDetail
 	if err := r.Gorm.Where("id = ?", id).Take(&rec).Error; err != nil {
 		return nil, err
 	}

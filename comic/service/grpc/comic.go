@@ -11,7 +11,7 @@ import (
 )
 
 type ComicRepository interface {
-	GetComicInfos(ids []int64) ([]*model.Comic, error)
+	FindComicDetails(ids []int64) ([]*model.ComicDetail, error)
 }
 
 type ComicService struct {
@@ -19,34 +19,16 @@ type ComicService struct {
 	Repository ComicRepository
 }
 
-func (s *ComicService) ListComicInfo(ctx context.Context, req *pb.ListComicInfoRequest, res *pb.ListComicInfoResponse) error {
-	entiry, err := s.Repository.GetComicInfos(req.ComicIds)
+func (s *ComicService) ListComicDetail(ctx context.Context, req *pb.ListComicDetailRequest, res *pb.ListComicDetailResponse) error {
+	entiry, err := s.Repository.FindComicDetails(req.ComicIds)
 	if err != nil || len(entiry) == 0 {
 		return status.Error(codes.NotFound, "")
 	}
 
-	res.Comics = convert(entiry)
+	res.Comics = newComicDetail(entiry)
 	return nil
 }
 
-func convert(entity []*model.Comic) []*pb.ComicInfo {
-	res := make([]*pb.ComicInfo, 0, len(entity))
-	for _, v := range entity {
-		c := new(pb.ComicInfo)
-
-		c.AddTime = v.AddTime
-		c.Authors = v.Authors
-		c.Cover = v.Cover
-		c.Id = v.Id
-		c.IsEnd = int32(v.IsEnd)
-		c.LastUpdatetime = v.LastUpdatetime
-		c.Num = v.Num
-		c.Status = int32(v.Status)
-		c.Title = v.Title
-		c.Types = v.Types
-
-		res = append(res, c)
-	}
-
-	return res
+func (s *ComicService) ListCategoryDetail(ctx context.Context, req *pb.ListCategoryDetailRequest, res *pb.ListCategoryDetailResponse) error {
+	return nil
 }

@@ -13,6 +13,15 @@ services:
     networks: 
       - my-bridge
 
+  etcd-web-ui: #etcd web ui
+    image: deltaprojects/etcdkeeper:latest
+    ports:
+      - 8090:8080
+    networks:
+      - my-bridge
+    depends_on:
+      - etcd
+
   micro-gateway: #micro网关
     image: micro/micro:v2.9.3
     ports: 

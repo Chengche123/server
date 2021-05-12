@@ -11,8 +11,8 @@ func TestGetComicInfos(t *testing.T) {
 	ins := newComicRepository()
 	defer ins.Close()
 
-	ids := []int64{1, 2, 3, 4, 3826, 3956}
-	res, err := ins.GetComicInfos(ids)
+	ids := []int64{50758, 33322}
+	res, err := ins.FindComicDetails(ids)
 	if err != nil {
 		panic(err)
 	}
