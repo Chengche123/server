@@ -4,8 +4,9 @@ import (
 	"comic-service/dao"
 	server "comic-service/server/grpc"
 	grpc "comic-service/service/grpc"
-	"comic/share/database/mysql/dsn"
-	log "comic/share/log/zap"
+	config "comic/share/config/database"
+	zlog "comic/share/log/zap"
+
 	"comic/share/os/env"
 
 	"go.uber.org/zap"
@@ -17,33 +18,31 @@ import (
 )
 
 var (
-	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", dsn.DefaultAddr)
+	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", config.DefaultMySqlAddr)
 	graceTimeout = time.Second * 3
 )
 
 func main() {
-	logger := log.Logger
-
 	repo, err := dao.NewComicRepository(mysqlDBAddr)
 	if err != nil {
-		logger.Error("", zap.Error(err))
+		zlog.Logger.Error("", zap.Error(err))
 		return
 	}
+	defer repo.Close()
 
-	service := &grpc.ComicService{
-		Logger:     logger,
-		Repository: repo,
-	}
-
-	server, err := server.NewComicServer(service)
+	server, err := server.NewComicServer(&grpc.ComicService{
+		ComicRepository: repo,
+	})
 	if err != nil {
-		logger.Error("", zap.Error(err))
+		zlog.Logger.Error("", zap.Error(err))
+		return
 	}
 
 	go func() {
 		err := server.Run()
 		if err != nil {
-			logger.Error("service has stoped", zap.Error(err))
+			zlog.Logger.Error("service has stoped", zap.Error(err))
+			return
 		}
 	}()
 
@@ -53,18 +52,16 @@ func main() {
 
 	closed := make(chan struct{})
 	go func() {
-		err := server.Server().Stop()
-		if err != nil {
-			logger.Error("failed to stop service", zap.Error(err))
-		}
+		_ = repo.Close()
+		_ = server.Server().Stop()
 
 		close(closed)
 	}()
 
 	select {
 	case <-closed:
-		logger.Info("graceful shutdown")
+		zlog.Logger.Info("graceful shutdown")
 	case <-time.After(graceTimeout):
-		logger.Error("shutdown timeout")
+		zlog.Logger.Error("shutdown timeout")
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"comic-service/model"
 	"context"
 
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -16,12 +15,11 @@ type ComicRepository interface {
 }
 
 type ComicService struct {
-	Logger     *zap.Logger
-	Repository ComicRepository
+	ComicRepository ComicRepository
 }
 
 func (s *ComicService) ListComicDetail(ctx context.Context, req *pb.ListComicDetailRequest, res *pb.ListComicDetailResponse) error {
-	mos, err := s.Repository.FindComicDetails(req.ComicIds)
+	mos, err := s.ComicRepository.FindComicDetails(req.ComicIds)
 	if err != nil {
 		return status.Error(codes.NotFound, "")
 	}
@@ -31,7 +29,7 @@ func (s *ComicService) ListComicDetail(ctx context.Context, req *pb.ListComicDet
 }
 
 func (s *ComicService) ListCategoryDetail(ctx context.Context, req *pb.ListCategoryDetailRequest, res *pb.ListCategoryDetailResponse) error {
-	mos, err := s.Repository.FindCategoryDetail(req.Type, int(req.Sort), int(req.Offset), int(req.Limit))
+	mos, err := s.ComicRepository.FindCategoryDetail(req.Type, int(req.Sort), int(req.Offset), int(req.Limit))
 	if err != nil || len(mos) == 0 {
 		return status.Error(codes.NotFound, "")
 	}

@@ -16,15 +16,15 @@ var (
 func NewComicServer(comicService pb.ComicServiceHandler) (micro.Service, error) {
 	service, err := server.NewMicroServer(serverName)
 	if err != nil {
-		return nil, fmt.Errorf("cannot init server: %v", err)
+		return nil, err
 	}
-
-	service.Init()
 
 	err = pb.RegisterComicServiceHandler(service.Server(), comicService)
 	if err != nil {
 		return nil, fmt.Errorf("failed to register handler: %v", err)
 	}
+
+	service.Init()
 
 	return service, nil
 }

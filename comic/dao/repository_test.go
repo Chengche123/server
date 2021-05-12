@@ -1,11 +1,10 @@
 package dao
 
 import (
+	config "comic/share/config/database"
 	"comic/share/database/gorm"
-	"comic/share/database/mysql/dsn"
-	"testing"
 
-	"go.uber.org/zap"
+	"testing"
 )
 
 func TestGetComicInfos(t *testing.T) {
@@ -24,15 +23,12 @@ func TestGetComicInfos(t *testing.T) {
 }
 
 func newComicRepository() *ComicRepository {
-	db, err := gorm.NewMysqlGormByDSN(dsn.DefaultDSN)
+	db, err := gorm.NewMysqlGormByDSN(config.DefaultMysqlDSN)
 	if err != nil {
 		panic(err)
 	}
 
-	logger, _ := zap.NewDevelopment()
-
 	return &ComicRepository{
-		Logger: logger,
-		Gorm:   db,
+		Gorm: db,
 	}
 }
