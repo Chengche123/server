@@ -1,43 +1,29 @@
 package server
 
 import (
+	"comic/share/micro/server"
 	"fmt"
 	pb "rec-service/api/grpc/v1"
-	"time"
-
-	"comic/share/os/env"
 
 	"github.com/micro/go-micro/v2"
-
-	"github.com/micro/go-micro/v2/registry"
-	"github.com/micro/go-plugins/registry/etcdv3/v2"
 )
 
 var (
-	registerTTL      = 30 * time.Second
-	registerInterval = 10 * time.Second
-	srvName          = "go.micro.srv.comic.rec.v1"
-	registryAddr     = env.FormatEnvOrDefault("%s", "COMIC_REGISTRY_ADDR", "127.0.0.1:2379")
+	srvName = "go.micro.api.comic.rec.v1"
 )
 
-func NewRecServer(srv pb.RecServiceHandler) (micro.Service, error) {
-	reg := etcdv3.NewRegistry(func(op *registry.Options) {
-		op.Addrs = []string{registryAddr}
-	})
+func NewRecServer(recService pb.RecServiceHandler) (micro.Service, error) {
+	service, err := server.NewMicroServer(srvName)
+	if err != nil {
+		return nil, err
+	}
 
-	service := micro.NewService(
-		micro.Registry(reg),
-		micro.Name(srvName),
-		micro.RegisterTTL(registerTTL),
-		micro.RegisterInterval(registerInterval),
-	)
-
-	service.Init()
-
-	err := pb.RegisterRecServiceHandler(service.Server(), srv)
+	err = pb.RegisterRecServiceHandler(service.Server(), recService)
 	if err != nil {
 		return nil, fmt.Errorf("failed to register handler: %v", err)
 	}
+
+	service.Init()
 
 	return service, nil
 }

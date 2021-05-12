@@ -1,12 +1,14 @@
 package main
 
 import (
+	config "comic/share/config/database"
+	zlog "comic/share/log/zap"
 	"time"
 
 	"go.uber.org/zap"
 
 	"rec-service/dao"
-	grpc "rec-service/service"
+	"rec-service/service"
 
 	"comic/share/os/env"
 
@@ -17,30 +19,29 @@ import (
 )
 
 var (
-	mysqlDBAddr = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", "127.0.0.1:3306")
+	mysqlDBAddr = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", config.DefaultMySqlAddr)
 )
 
 func main() {
-	logger, _ := zap.NewDevelopment()
-
-	repo, err := dao.NewRecRepositoryByDSN(mysqlDBAddr, logger)
+	repo, err := dao.NewRecRepository(mysqlDBAddr)
 	if err != nil {
-		logger.Fatal("failed to create repository", zap.Error(err))
+		zlog.Logger.Error(err.Error())
+		return
 	}
+	defer repo.Close()
 
-	service, err := server.NewRecServer(&grpc.Service{
-		Logger:        logger,
+	service, err := server.NewRecServer(&service.RecService{
 		RecRepository: repo,
 	})
 	if err != nil {
-		logger.Error("failed to create server", zap.Error(err))
+		zlog.Logger.Error(err.Error())
 		return
 	}
 
 	go func() {
 		err = service.Run()
 		if err != nil {
-			logger.Error("falied to run service", zap.Error(err))
+			zlog.Logger.Error("falied to run service", zap.Error(err))
 			return
 		}
 	}()
@@ -51,18 +52,16 @@ func main() {
 
 	closed := make(chan struct{})
 	go func() {
-		err := service.Server().Stop()
-		if err != nil {
-			logger.Error("failed to stop service", zap.Error(err))
-		}
+		_ = repo.Close()
+		_ = service.Server().Stop()
 
 		close(closed)
 	}()
 
 	select {
 	case <-closed:
-		logger.Info("graceful shutdown")
+		zlog.Logger.Info("graceful shutdown")
 	case <-time.After(3 * time.Second):
-		logger.Error("shutdown timeout")
+		zlog.Logger.Error("shutdown timeout")
 	}
 }

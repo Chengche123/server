@@ -2,11 +2,9 @@ package service
 
 import (
 	"context"
-	interceptor "interceptor-micro/auth"
 	pb "rec-service/api/grpc/v1"
 	"rec-service/model"
 
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -15,18 +13,11 @@ type RecRepository interface {
 	GetComicsByHot(offset int, limit int) ([]model.Comic, error)
 }
 
-type Service struct {
-	Logger        *zap.Logger
+type RecService struct {
 	RecRepository RecRepository
 }
 
-func (s *Service) Rec(ctx context.Context, req *pb.RecReq, res *pb.RecResponse) error {
-	uid, err := interceptor.UidFromContext(ctx)
-	if err != nil {
-		return status.Error(codes.Unauthenticated, "")
-	}
-	s.Logger.Info("context", zap.String("uid", uid))
-
+func (s *RecService) Rec(ctx context.Context, req *pb.RecReq, res *pb.RecResponse) error {
 	comics, err := s.RecRepository.GetComicsByHot(int(req.Offset), int(req.Limit))
 	if err != nil {
 		return status.Error(codes.Internal, "")
@@ -46,10 +37,10 @@ func (s *Service) Rec(ctx context.Context, req *pb.RecReq, res *pb.RecResponse) 
 	return nil
 }
 
-func (s *Service) RelatedRec(ctx context.Context, req *pb.RecReq, res *pb.RecResponse) error {
-	return nil
+func (s *RecService) RelatedRec(ctx context.Context, req *pb.RecReq, res *pb.RecResponse) error {
+	return status.Error(codes.Unimplemented, "")
 }
 
-func (s *Service) AuthorRec(ctx context.Context, req *pb.RecReq, res *pb.RecResponse) error {
-	return nil
+func (s *RecService) AuthorRec(ctx context.Context, req *pb.RecReq, res *pb.RecResponse) error {
+	return status.Error(codes.Unimplemented, "")
 }

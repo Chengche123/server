@@ -1,6 +1,7 @@
 package dao
 
 import (
+	zlog "comic/share/log/zap"
 	"fmt"
 	"rec-service/model"
 
@@ -11,7 +12,7 @@ func (r *RecRepository) GetComicsByHot(offset int, limit int) ([]model.Comic, er
 	var comics []model.Comic
 
 	if err := r.db.Order("num desc").Limit(limit).Offset(offset).Find(&comics).Error; err != nil {
-		r.logger.Error("failed to retrive comics", zap.Error(err))
+		zlog.Logger.Error("failed to retrive comics", zap.Error(err))
 
 		return nil, fmt.Errorf("failed to retrive comics: %v", err)
 	}
