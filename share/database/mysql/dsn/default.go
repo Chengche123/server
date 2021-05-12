@@ -1,0 +1,3 @@
+package dsn
+
+const DefaultDSN = ""
