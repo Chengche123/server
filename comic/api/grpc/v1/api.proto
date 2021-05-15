@@ -51,8 +51,27 @@ message CategoryDetail {
     int64 num = 8;
 }
 
+message ListComicCategoryFilterRequest {
+
+}
+
+message ListComicCategoryFilterResponse {
+    message Items {
+        uint32 tag_id = 1;
+        string tag_name = 2;
+    }
+
+    message Filter {
+        string title = 1;
+        repeated Items items = 2;
+    }
+
+    repeated Filter filters = 1;
+}
+
 service ComicService {
     rpc ListComicDetail (ListComicDetailRequest) returns (ListComicDetailResponse);
     rpc ListCategoryDetail (ListCategoryDetailRequest) returns (ListCategoryDetailResponse);
+    rpc ListComicCategoryFilter(ListComicCategoryFilterRequest) returns(ListComicCategoryFilterResponse);
 }
 

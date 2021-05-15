@@ -44,6 +44,7 @@ func NewComicServiceEndpoints() []*api.Endpoint {
 type ComicService interface {
 	ListComicDetail(ctx context.Context, in *ListComicDetailRequest, opts ...client.CallOption) (*ListComicDetailResponse, error)
 	ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, opts ...client.CallOption) (*ListCategoryDetailResponse, error)
+	ListComicCategoryFilter(ctx context.Context, in *ListComicCategoryFilterRequest, opts ...client.CallOption) (*ListComicCategoryFilterResponse, error)
 }
 
 type comicService struct {
@@ -78,17 +79,29 @@ func (c *comicService) ListCategoryDetail(ctx context.Context, in *ListCategoryD
 	return out, nil
 }
 
+func (c *comicService) ListComicCategoryFilter(ctx context.Context, in *ListComicCategoryFilterRequest, opts ...client.CallOption) (*ListComicCategoryFilterResponse, error) {
+	req := c.c.NewRequest(c.name, "ComicService.ListComicCategoryFilter", in)
+	out := new(ListComicCategoryFilterResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ComicService service
 
 type ComicServiceHandler interface {
 	ListComicDetail(context.Context, *ListComicDetailRequest, *ListComicDetailResponse) error
 	ListCategoryDetail(context.Context, *ListCategoryDetailRequest, *ListCategoryDetailResponse) error
+	ListComicCategoryFilter(context.Context, *ListComicCategoryFilterRequest, *ListComicCategoryFilterResponse) error
 }
 
 func RegisterComicServiceHandler(s server.Server, hdlr ComicServiceHandler, opts ...server.HandlerOption) error {
 	type comicService interface {
 		ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error
 		ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, out *ListCategoryDetailResponse) error
+		ListComicCategoryFilter(ctx context.Context, in *ListComicCategoryFilterRequest, out *ListComicCategoryFilterResponse) error
 	}
 	type ComicService struct {
 		comicService
@@ -107,4 +120,8 @@ func (h *comicServiceHandler) ListComicDetail(ctx context.Context, in *ListComic
 
 func (h *comicServiceHandler) ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, out *ListCategoryDetailResponse) error {
 	return h.ComicServiceHandler.ListCategoryDetail(ctx, in, out)
+}
+
+func (h *comicServiceHandler) ListComicCategoryFilter(ctx context.Context, in *ListComicCategoryFilterRequest, out *ListComicCategoryFilterResponse) error {
+	return h.ComicServiceHandler.ListComicCategoryFilter(ctx, in, out)
 }

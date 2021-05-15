@@ -27,3 +27,10 @@ type CategoryDetail struct {
 	LastUpdatetime int    `json:"last_updatetime"`
 	Num            int    `json:"num"`
 }
+
+type ComicCategoryFilter struct {
+	Id      int64  `gorm:"primaryKey;autoIncrement;not null"`
+	Title   string `gorm:"not null;type:varchar(255)"`
+	TagID   int
+	TagName string
+}

@@ -50,3 +50,24 @@ func newComicDetail(mos []*model.ComicDetail) []*pb.ComicDetail {
 
 	return res
 }
+
+func newComicCategoryFilter(mos []model.ComicCategoryFilter) []*pb.ListComicCategoryFilterResponse_Filter {
+	m := make(map[string][]*pb.ListComicCategoryFilterResponse_Items)
+
+	for _, v := range mos {
+		m[v.Title] = append(m[v.Title], &pb.ListComicCategoryFilterResponse_Items{
+			TagId:   uint32(v.TagID),
+			TagName: v.TagName,
+		})
+	}
+
+	res := make([]*pb.ListComicCategoryFilterResponse_Filter, 0, len(m))
+	for title, items := range m {
+		res = append(res, &pb.ListComicCategoryFilterResponse_Filter{
+			Title: title,
+			Items: items,
+		})
+	}
+
+	return res
+}

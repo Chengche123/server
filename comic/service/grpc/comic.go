@@ -12,6 +12,8 @@ import (
 type ComicRepository interface {
 	FindComicDetails(ids []int64) ([]*model.ComicDetail, error)
 	FindCategoryDetail(types string, sort, offset, limit int) ([]model.CategoryDetail, error)
+	FindComicCategoryFilter() ([]model.ComicCategoryFilter, error)
+	Close() error
 }
 
 type ComicService struct {
@@ -35,5 +37,15 @@ func (s *ComicService) ListCategoryDetail(ctx context.Context, req *pb.ListCateg
 	}
 
 	res.Details = newCategoryDetail(mos)
+	return nil
+}
+
+func (s *ComicService) ListComicCategoryFilter(ctx context.Context, req *pb.ListComicCategoryFilterRequest, res *pb.ListComicCategoryFilterResponse) error {
+	mos, err := s.ComicRepository.FindComicCategoryFilter()
+	if err != nil || len(mos) == 0 {
+		return status.Error(codes.NotFound, "")
+	}
+
+	res.Filters = newComicCategoryFilter(mos)
 	return nil
 }
