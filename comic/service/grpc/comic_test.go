@@ -3,9 +3,9 @@ package service
 import (
 	v1 "comic-service/api/grpc/v1"
 	"comic-service/dao"
-	config "comic/share/config/database"
 	"context"
 	"encoding/json"
+	config "share/config/database"
 	"testing"
 )
 

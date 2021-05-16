@@ -2,11 +2,11 @@ package main
 
 import (
 	server "auth-service/server/grpc"
-	config "comic/share/config/database"
-	zlog "comic/share/log/zap"
-	"comic/share/os/env"
 	"os"
 	"os/signal"
+	config "share/config/database"
+	zlog "share/log/zap"
+	"share/os/env"
 	"syscall"
 	"time"
 

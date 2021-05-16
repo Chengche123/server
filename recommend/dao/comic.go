@@ -1,9 +1,9 @@
 package dao
 
 import (
-	zlog "comic/share/log/zap"
 	"fmt"
 	"rec-service/model"
+	zlog "share/log/zap"
 
 	"go.uber.org/zap"
 )

@@ -2,11 +2,13 @@ package dao
 
 import (
 	"auth-service/model"
-	mgorm "comic/share/database/gorm"
 	"fmt"
+	mgorm "share/database/gorm"
+	zlog "share/log/zap"
 	"strconv"
 	"time"
 
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 
 	"gorm.io/gorm"
@@ -32,12 +34,10 @@ func NewUserRepository(dsn string) (*UserRepository, error) {
 }
 
 func (m *UserRepository) FindOrAddUser(userName, password string) (accountID string, err error) {
-	userAccount := model.UserAccount{
-		UserName: userName,
-	}
+	var userAccount model.UserAccount
 
 	err = m.db.Transaction(func(tx *gorm.DB) error {
-		tx.Take(&userAccount)
+		tx.Where("user_name = ?", userName).Take(&userAccount)
 
 		// 找到用户
 		if userAccount.Id != 0 {
@@ -52,6 +52,7 @@ func (m *UserRepository) FindOrAddUser(userName, password string) (accountID str
 
 		// 未找到用户,创建新用户
 		hashedPwd, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		userAccount.UserName = userName
 		userAccount.Password = string(hashedPwd)
 		userAccount.AddTime = time.Now().Unix()
 		userAccount.Status = 1
@@ -66,5 +67,6 @@ func (m *UserRepository) FindOrAddUser(userName, password string) (accountID str
 		return "", fmt.Errorf("cannot resolve user: %v", err)
 	}
 
+	zlog.Logger.Info("", zap.Int("accountID", int(userAccount.Id)))
 	return strconv.Itoa(int(userAccount.Id)), nil
 }

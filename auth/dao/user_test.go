@@ -1,8 +1,8 @@
 package dao
 
 import (
-	config "comic/share/config/database"
 	"os"
+	config "share/config/database"
 	"testing"
 	"time"
 

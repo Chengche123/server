@@ -4,10 +4,10 @@ import (
 	"comic-service/dao"
 	server "comic-service/server/grpc"
 	grpc "comic-service/service/grpc"
-	config "comic/share/config/database"
-	zlog "comic/share/log/zap"
+	config "share/config/database"
+	zlog "share/log/zap"
 
-	"comic/share/os/env"
+	"share/os/env"
 
 	"go.uber.org/zap"
 

@@ -4,7 +4,7 @@ import (
 	pb "comic-service/api/grpc/v1"
 	"fmt"
 
-	"comic/share/micro/server"
+	"share/micro/server"
 
 	"github.com/micro/go-micro/v2"
 )

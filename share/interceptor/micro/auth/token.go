@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"comic/share/auth/token"
+	"share/auth/token"
 
 	"github.com/micro/go-micro/v2/server"
 	"google.golang.org/grpc/codes"

@@ -1,8 +1,8 @@
 package dao
 
 import (
-	config "comic/share/config/database"
-	"comic/share/database/gorm"
+	config "share/config/database"
+	"share/database/gorm"
 
 	"testing"
 )

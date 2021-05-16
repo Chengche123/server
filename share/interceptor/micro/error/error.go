@@ -6,7 +6,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	merrors "github.com/micro/go-micro/v2/errors"
 
-	zlog "comic/share/log/zap"
+	zlog "share/log/zap"
 
 	"github.com/micro/go-micro/v2/server"
 	"go.uber.org/zap"

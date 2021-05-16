@@ -2,10 +2,10 @@ package server
 
 import (
 	pb "auth-service/api/grpc/v1"
-	interceptor "comic/share/interceptor/micro/error"
 	"fmt"
+	interceptor "share/interceptor/micro/error"
 
-	"comic/share/micro/server"
+	"share/micro/server"
 
 	"github.com/micro/go-micro/v2"
 )

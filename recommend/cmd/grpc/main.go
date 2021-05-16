@@ -1,8 +1,8 @@
 package main
 
 import (
-	config "comic/share/config/database"
-	zlog "comic/share/log/zap"
+	config "share/config/database"
+	zlog "share/log/zap"
 	"time"
 
 	"go.uber.org/zap"
@@ -10,7 +10,7 @@ import (
 	"rec-service/dao"
 	"rec-service/service"
 
-	"comic/share/os/env"
+	"share/os/env"
 
 	"os"
 	"os/signal"

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	config "comic/share/config/database"
+	config "share/config/database"
 	"testing"
 
 	_ "gorm.io/driver/mysql"

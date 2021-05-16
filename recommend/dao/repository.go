@@ -1,7 +1,7 @@
 package dao
 
 import (
-	mgorm "comic/share/database/gorm"
+	mgorm "share/database/gorm"
 
 	"gorm.io/gorm"
 )

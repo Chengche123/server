@@ -1,8 +1,8 @@
 package service
 
 import (
-	zlog "comic/share/log/zap"
 	"context"
+	zlog "share/log/zap"
 	"time"
 
 	authpb "auth-service/api/grpc/v1"

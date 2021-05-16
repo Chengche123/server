@@ -1,9 +1,9 @@
 package server
 
 import (
-	"comic/share/micro/server"
 	"fmt"
 	pb "rec-service/api/grpc/v1"
+	"share/micro/server"
 
 	"github.com/micro/go-micro/v2"
 )
