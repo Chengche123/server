@@ -71,3 +71,23 @@ func newComicCategoryFilter(mos []model.ComicCategoryFilter) []*pb.ListComicCate
 
 	return res
 }
+
+func newComicSpecial(mos []model.ComicSpecial) []*pb.ComicSpecial {
+	res := make([]*pb.ComicSpecial, 0, len(mos))
+	for _, v := range mos {
+		c := new(pb.ComicSpecial)
+
+		c.CreateTime = int64(v.CreateTime)
+		c.Id = int64(v.ID)
+		c.PageType = int64(v.PageType)
+		c.PageUrl = v.PageURL
+		c.ShortTitle = v.ShortTitle
+		c.SmallCover = v.SmallCover
+		c.Sort = int64(v.Sort)
+		c.Title = v.Title
+
+		res = append(res, c)
+	}
+
+	return res
+}

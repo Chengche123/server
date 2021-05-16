@@ -13,6 +13,7 @@ type ComicRepository interface {
 	FindComicDetails(ids []int64) ([]*model.ComicDetail, error)
 	FindCategoryDetail(types string, sort, offset, limit int) ([]model.CategoryDetail, error)
 	FindComicCategoryFilter() ([]model.ComicCategoryFilter, error)
+	FindComicSpecial(offset, limit int) ([]model.ComicSpecial, error)
 	Close() error
 }
 
@@ -47,5 +48,15 @@ func (s *ComicService) ListComicCategoryFilter(ctx context.Context, req *pb.List
 	}
 
 	res.Filters = newComicCategoryFilter(mos)
+	return nil
+}
+
+func (s *ComicService) ListComicSpecial(ctx context.Context, req *pb.ListComicSpecialRequest, res *pb.ListComicSpecialResponse) error {
+	mos, err := s.ComicRepository.FindComicSpecial(int(req.Offset), int(req.Limit))
+	if err != nil || len(mos) == 0 {
+		return status.Error(codes.NotFound, "")
+	}
+
+	res.ComicSpecials = newComicSpecial(mos)
 	return nil
 }

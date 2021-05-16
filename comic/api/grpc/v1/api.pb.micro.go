@@ -45,6 +45,7 @@ type ComicService interface {
 	ListComicDetail(ctx context.Context, in *ListComicDetailRequest, opts ...client.CallOption) (*ListComicDetailResponse, error)
 	ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, opts ...client.CallOption) (*ListCategoryDetailResponse, error)
 	ListComicCategoryFilter(ctx context.Context, in *ListComicCategoryFilterRequest, opts ...client.CallOption) (*ListComicCategoryFilterResponse, error)
+	ListComicSpecial(ctx context.Context, in *ListComicSpecialRequest, opts ...client.CallOption) (*ListComicSpecialResponse, error)
 }
 
 type comicService struct {
@@ -89,12 +90,23 @@ func (c *comicService) ListComicCategoryFilter(ctx context.Context, in *ListComi
 	return out, nil
 }
 
+func (c *comicService) ListComicSpecial(ctx context.Context, in *ListComicSpecialRequest, opts ...client.CallOption) (*ListComicSpecialResponse, error) {
+	req := c.c.NewRequest(c.name, "ComicService.ListComicSpecial", in)
+	out := new(ListComicSpecialResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ComicService service
 
 type ComicServiceHandler interface {
 	ListComicDetail(context.Context, *ListComicDetailRequest, *ListComicDetailResponse) error
 	ListCategoryDetail(context.Context, *ListCategoryDetailRequest, *ListCategoryDetailResponse) error
 	ListComicCategoryFilter(context.Context, *ListComicCategoryFilterRequest, *ListComicCategoryFilterResponse) error
+	ListComicSpecial(context.Context, *ListComicSpecialRequest, *ListComicSpecialResponse) error
 }
 
 func RegisterComicServiceHandler(s server.Server, hdlr ComicServiceHandler, opts ...server.HandlerOption) error {
@@ -102,6 +114,7 @@ func RegisterComicServiceHandler(s server.Server, hdlr ComicServiceHandler, opts
 		ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error
 		ListCategoryDetail(ctx context.Context, in *ListCategoryDetailRequest, out *ListCategoryDetailResponse) error
 		ListComicCategoryFilter(ctx context.Context, in *ListComicCategoryFilterRequest, out *ListComicCategoryFilterResponse) error
+		ListComicSpecial(ctx context.Context, in *ListComicSpecialRequest, out *ListComicSpecialResponse) error
 	}
 	type ComicService struct {
 		comicService
@@ -124,4 +137,8 @@ func (h *comicServiceHandler) ListCategoryDetail(ctx context.Context, in *ListCa
 
 func (h *comicServiceHandler) ListComicCategoryFilter(ctx context.Context, in *ListComicCategoryFilterRequest, out *ListComicCategoryFilterResponse) error {
 	return h.ComicServiceHandler.ListComicCategoryFilter(ctx, in, out)
+}
+
+func (h *comicServiceHandler) ListComicSpecial(ctx context.Context, in *ListComicSpecialRequest, out *ListComicSpecialResponse) error {
+	return h.ComicServiceHandler.ListComicSpecial(ctx, in, out)
 }

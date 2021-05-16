@@ -69,9 +69,31 @@ message ListComicCategoryFilterResponse {
     repeated Filter filters = 1;
 }
 
+message ListComicSpecialRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+}
+
+message ListComicSpecialResponse {
+    // 按照专题创建时间降序
+    repeated ComicSpecial ComicSpecials = 1 ;
+}
+
+message ComicSpecial {
+    int64 id = 1;
+    string title = 2;
+    string short_title = 3;
+    int64 create_time = 4;
+    string small_cover = 5;
+    int64 page_type = 6;
+    int64 sort = 7;
+    string page_url = 8;
+}
+
 service ComicService {
     rpc ListComicDetail (ListComicDetailRequest) returns (ListComicDetailResponse);
     rpc ListCategoryDetail (ListCategoryDetailRequest) returns (ListCategoryDetailResponse);
     rpc ListComicCategoryFilter(ListComicCategoryFilterRequest) returns(ListComicCategoryFilterResponse);
+    rpc ListComicSpecial(ListComicSpecialRequest) returns(ListComicSpecialResponse);
 }
 

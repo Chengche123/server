@@ -1,17 +1,22 @@
 package model
 
 import (
-	cmodel "crawler/model/comic"
+	comicModel "crawler/model/comic"
+	specialModel "crawler/model/special"
 )
 
 type ComicDetail struct {
-	cmodel.ComicDetail
+	comicModel.ComicDetail
 }
 
 type CategoryDetail struct {
-	cmodel.CategoryDetail
+	comicModel.CategoryDetail
 }
 
 type ComicCategoryFilter struct {
-	cmodel.ComicCategoryFilter
+	comicModel.ComicCategoryFilter
+}
+
+type ComicSpecial struct {
+	specialModel.ComicSpecial
 }
