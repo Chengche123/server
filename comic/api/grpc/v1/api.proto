@@ -4,14 +4,6 @@ package comic.v1;
 
 option go_package = './;v1';
 
-message ListComicDetailRequest {
-    repeated int64 comic_ids = 1;
-}
-
-message ListComicDetailResponse {
-    repeated ComicDetail comics = 1;
-}
-
 message ComicDetail {
     int64 Id = 1;
     string Title = 2;
@@ -29,18 +21,7 @@ message ComicDetail {
     int64 SubscribeNum = 14;
 }
 
-message ListCategoryDetailRequest {
-    string type = 1; // TODO: 更改为tag_ids
-    int32 sort = 2; // 0:人气排序 1:更新排序
-    int32 limit = 3;
-    int32 offset = 4;
-}
-
-message ListCategoryDetailResponse {
-    repeated CategoryDetail details = 1;
-}
-
-message CategoryDetail {
+message ComicCategoryDetail {
     int64 id = 1;
     string title = 2;
     string authors = 3;
@@ -51,32 +32,14 @@ message CategoryDetail {
     int64 num = 8;
 }
 
-message ListComicCategoryFilterRequest {
-
+message ComicCategoryFilterItem {
+    uint32 tag_id = 1;
+    string tag_name = 2;
 }
 
-message ListComicCategoryFilterResponse {
-    message Items {
-        uint32 tag_id = 1;
-        string tag_name = 2;
-    }
-
-    message Filter {
-        string title = 1;
-        repeated Items items = 2;
-    }
-
-    repeated Filter filters = 1;
-}
-
-message ListComicSpecialRequest {
-    int64 offset = 1;
-    int64 limit = 2;
-}
-
-message ListComicSpecialResponse {
-    // 按照专题创建时间降序
-    repeated ComicSpecial ComicSpecials = 1 ;
+message ComicCategoryFilter {
+    string title = 1;
+    repeated ComicCategoryFilterItem items = 2;
 }
 
 message ComicSpecial {
@@ -90,9 +53,51 @@ message ComicSpecial {
     string page_url = 8;
 }
 
+message ListComicDetailRequest {
+    repeated int64 comic_ids = 1;
+}
+
+message ListComicDetailResponse {
+    repeated ComicDetail comics = 1;
+}
+
+
+message ListComicCategoryDetailRequest {
+    string type = 1; // TODO: 更改为tag_ids
+    int32 sort = 2; // 0:人气排序 1:更新排序
+    int32 limit = 3;
+    int32 offset = 4;
+}
+
+message ListComicCategoryDetailResponse {
+    repeated ComicCategoryDetail details = 1;
+}
+
+
+message ListComicCategoryFilterRequest {
+
+}
+
+
+
+message ListComicCategoryFilterResponse {
+    repeated ComicCategoryFilter filters = 1;
+}
+
+message ListComicSpecialRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+}
+
+message ListComicSpecialResponse {
+    // 按照专题创建时间降序
+    repeated ComicSpecial ComicSpecials = 1 ;
+}
+
+
 service ComicService {
     rpc ListComicDetail (ListComicDetailRequest) returns (ListComicDetailResponse);
-    rpc ListCategoryDetail (ListCategoryDetailRequest) returns (ListCategoryDetailResponse);
+    rpc ListComicCategoryDetail (ListComicCategoryDetailRequest) returns (ListComicCategoryDetailResponse);
     rpc ListComicCategoryFilter(ListComicCategoryFilterRequest) returns(ListComicCategoryFilterResponse);
     rpc ListComicSpecial(ListComicSpecialRequest) returns(ListComicSpecialResponse);
 }

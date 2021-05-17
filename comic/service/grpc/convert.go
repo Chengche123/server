@@ -5,10 +5,10 @@ import (
 	"comic-service/model"
 )
 
-func newCategoryDetail(mos []model.CategoryDetail) []*pb.CategoryDetail {
-	res := make([]*pb.CategoryDetail, 0, len(mos))
+func newComicCategoryDetail(mos []model.CategoryDetail) []*pb.ComicCategoryDetail {
+	res := make([]*pb.ComicCategoryDetail, 0, len(mos))
 	for _, v := range mos {
-		c := new(pb.CategoryDetail)
+		c := new(pb.ComicCategoryDetail)
 
 		c.Authors = v.Authors
 		c.Cover = v.Cover
@@ -51,19 +51,19 @@ func newComicDetail(mos []*model.ComicDetail) []*pb.ComicDetail {
 	return res
 }
 
-func newComicCategoryFilter(mos []model.ComicCategoryFilter) []*pb.ListComicCategoryFilterResponse_Filter {
-	m := make(map[string][]*pb.ListComicCategoryFilterResponse_Items)
+func newComicCategoryFilter(mos []model.ComicCategoryFilter) []*pb.ComicCategoryFilter {
+	m := make(map[string][]*pb.ComicCategoryFilterItem)
 
 	for _, v := range mos {
-		m[v.Title] = append(m[v.Title], &pb.ListComicCategoryFilterResponse_Items{
+		m[v.Title] = append(m[v.Title], &pb.ComicCategoryFilterItem{
 			TagId:   uint32(v.TagID),
 			TagName: v.TagName,
 		})
 	}
 
-	res := make([]*pb.ListComicCategoryFilterResponse_Filter, 0, len(m))
+	res := make([]*pb.ComicCategoryFilter, 0, len(m))
 	for title, items := range m {
-		res = append(res, &pb.ListComicCategoryFilterResponse_Filter{
+		res = append(res, &pb.ComicCategoryFilter{
 			Title: title,
 			Items: items,
 		})

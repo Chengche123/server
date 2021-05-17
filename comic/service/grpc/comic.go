@@ -31,13 +31,13 @@ func (s *ComicService) ListComicDetail(ctx context.Context, req *pb.ListComicDet
 	return nil
 }
 
-func (s *ComicService) ListCategoryDetail(ctx context.Context, req *pb.ListCategoryDetailRequest, res *pb.ListCategoryDetailResponse) error {
+func (s *ComicService) ListComicCategoryDetail(ctx context.Context, req *pb.ListComicCategoryDetailRequest, res *pb.ListComicCategoryDetailResponse) error {
 	mos, err := s.ComicRepository.FindCategoryDetail(req.Type, int(req.Sort), int(req.Offset), int(req.Limit))
 	if err != nil || len(mos) == 0 {
 		return status.Error(codes.NotFound, "")
 	}
 
-	res.Details = newCategoryDetail(mos)
+	res.Details = newComicCategoryDetail(mos)
 	return nil
 }
 
