@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package recommend.v1;
+package rec.v1;
 
 option go_package = "./;v1";
 
