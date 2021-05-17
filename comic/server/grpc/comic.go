@@ -10,11 +10,11 @@ import (
 )
 
 var (
-	serverName = "go.micro.api.comic.comic.v1"
+	ServiceName = "go.micro.api.comic.comic.v1"
 )
 
 func NewComicServer(comicService pb.ComicServiceHandler) (micro.Service, error) {
-	service, err := server.NewMicroServer(serverName)
+	service, err := server.NewMicroServer(ServiceName)
 	if err != nil {
 		return nil, err
 	}
