@@ -13,13 +13,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type FaceFrontError struct {
-	// 如果字段名为code,就会掉进micro框架的坑里面
-	StatusCode uint32 `json:"status_code"`
-
-	Message string `json:"message"`
-}
-
 type ErrorInterceptor struct {
 	logger *zap.Logger
 }
