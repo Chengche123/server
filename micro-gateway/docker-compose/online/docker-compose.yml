@@ -1,0 +1,42 @@
+version: '3.5'
+
+services: 
+  etcd: #etcd
+    image: bitnami/etcd:3.4.15
+    ports: 
+      - 127.0.0.1:2379:2379
+    environment: 
+      ALLOW_NONE_AUTHENTICATION: 'yes'
+    networks: 
+      - my-bridge
+
+
+  micro-gateway: #micro网关
+    image: micro/micro:v2.9.3
+    ports: 
+      - 80:8080
+    environment: 
+      MICRO_REGISTRY: etcd
+      MICRO_REGISTRY_ADDRESS: etcd:2379
+    networks: 
+      - my-bridge
+    command: '--client_retries 0 api' # --handler=api
+    depends_on: 
+      - etcd
+
+  micro-web: #micro web界面
+    image: micro/micro:v2.9.3
+    ports: 
+      - 8082:8082
+    environment: 
+      MICRO_REGISTRY: etcd
+      MICRO_REGISTRY_ADDRESS: etcd:2379
+    networks: 
+      - my-bridge
+    command: web
+    depends_on: 
+      - etcd
+
+networks: 
+  my-bridge: 
+
