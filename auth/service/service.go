@@ -34,7 +34,7 @@ func (s *AuthService) UserLogin(ctx context.Context, req *authpb.UserLoginReques
 
 	uid, err := s.UserRepository.FindOrAddUser(req.UserName, req.Password)
 	if err != nil {
-		return status.Error(codes.Unauthenticated, "")
+		return status.Error(codes.Unauthenticated, "密码错误")
 	}
 
 	var expire time.Duration = time.Hour * 2
