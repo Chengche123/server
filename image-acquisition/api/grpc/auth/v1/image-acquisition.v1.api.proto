@@ -4,29 +4,81 @@ package image.acquisition.v1;
 
 option go_package = './;v1';
 
+message Error {
+    int32 code = 1; // http状态码
+    string detail = 2; // 错误的详细信息
+    string status = 3; // http状态码描述信息
+}
+
 message LoginRequest {
-    string user_name = 1;
-    string password = 2;
+    string user_name = 1; // 用户名
+    string password = 2;  // 密码
 }
 
 message LoginResponse {
-    string access_token = 1;
-    int32 expires_in = 2;
-    // oauth2
+    string access_token = 1; // token
+    int32 expires_in = 2;  // token有效时间,单位为秒
 }
 
 message RegisterRequest {
-    string user_name = 1;
-    string password = 2;
+    string user_name = 1; // 用户名
+    string password = 2; // 密码
 }
 
 message RegisterResponse {
-    string access_token = 1;
-    int32 expires_in = 2;
-    // oauth2
+    string access_token = 1; // token
+    int32 expires_in = 2; // token有效时间,单位为秒
 }
 
+/*
+请求均用POST方法
+请求参数放进body里,格式为json
+响应也会放进body里,格式同样为json
+
+接口说明,以 rpc Login (LoginRequest) returns (LoginResponse); 为例进行说明
+    1 接口地址和接口功能会用注释给出
+    2 接口的请求参数描述为:
+        message LoginRequest {
+            string user_name = 1; // 用户名
+            string password = 2;  // 密码
+        }
+        请求时用json格式写成: 如
+        {
+            "user_name" : "foo",
+            "password" : "qwe123456"
+        }
+    3 接口正常响应时会返回200状态码,响应的内容描述为
+        message LoginResponse {
+            string access_token = 1; // token
+            int32 expires_in = 2;  // token有效时间,单位为秒
+        }
+        响应时会用json格式写成: 如
+        {
+            "access_token": "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjQ3MDQ5ODIsImlhdCI6MTYyNDQ0NTc4MiwiaXNzIjoiaW1hZ2UtYWNxdWlzaXRpb24vYXV0aCIsInN1YiI6IjE0In0.BmGchTt9FNtyjrzEkxZYwce-pmlbuyGM348YSaVH_Fc3kblt5eboB10Jx7jHE4B6af_bfj7fNpxxiOOMgC7dtnTYuLx-LYAMal2IOHhpz3xg1xXbd4q0Seo8wn9n1SWO--3YYm75ZfmUPq-w2duBen7ORC4t-40NKeFGZm3sBSE4QSS1nnVruEnWR064jtoWgrIdMzOR3V4ECkDXnM9r36GUrbieDsJ59t3AJu10KcJayhxI6ADnOBx8fSalraDvC7QdElo3HjPHWFsE1UHFMXpkcFrbyOE9rZcoK9WZYysvQifnTgWqJQ_FMx36OIpYKrC71QZ_HMX1xTTgQQZbYg",
+            "expires_in": 259200
+        }
+    3 接口发生错误时会返回相应的http状态码,响应参数描述为:
+        message Error {
+            int32 code = 1; // http状态码
+            string detail = 2; // 错误的详细信息
+            string status = 3; // http状态码描述信息
+        }
+        用json格式会写成: 如
+        {
+            "code": 400,
+            "detail": "用户名或密码不能为空",
+            "status": "Bad Request"
+        }
+*/
 service AuthService {
+    /*
+    接口地址: http://47.96.152.251/image-acquisition/v1/AuthService/Login
+    接口功能: 用户登录,若登录成功则返回token,用户在进行需要验证的接口调用时需在header中携带token
+    */
     rpc Login (LoginRequest) returns (LoginResponse);
+    /*
+    接口地址: http://47.96.152.251/image-acquisition/v1/AuthService/Register
+    接口功能: 用户注册,若注册成功也同登录成功一样返回token
+    */
     rpc Register(RegisterRequest) returns (RegisterResponse);
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	pb "image-acquisition-service/api/grpc/auth/v1"
 	"time"
 
@@ -23,7 +24,20 @@ type UserService struct {
 	TokenGenerator TokenGenerator
 }
 
+func check(username, password string) error {
+	if username == "" || password == "" {
+		return fmt.Errorf("用户名或密码不能为空")
+	}
+
+	return nil
+}
+
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest, res *pb.LoginResponse) error {
+	err := check(req.UserName, req.Password)
+	if err != nil {
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	uid, err := s.UserRepository.FindUser(req.UserName, req.Password)
 	if err != nil {
 		return status.Error(codes.Unauthenticated, err.Error())
@@ -43,6 +57,11 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest, res *pb.L
 }
 
 func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest, res *pb.RegisterResponse) error {
+	err := check(req.UserName, req.Password)
+	if err != nil {
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	uid, err := s.UserRepository.AddUser(req.UserName, req.Password)
 	if err != nil {
 		return status.Error(codes.AlreadyExists, err.Error())
