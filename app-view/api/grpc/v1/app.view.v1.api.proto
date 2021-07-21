@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package app.view.v1;
+
+option go_package = "./;v1";
+
+
+message ListHomeMoRequest {
+
+}
+
+message Owner {
+    string name = 1;
+    string face = 2;
+    uint32 fans = 3;
+}
+
+message VideoMo {
+    string id = 1;
+    string vid = 2;
+    string title = 3;
+    string tname = 4;
+    string url = 5;
+    string cover = 6;
+    uint32 pubdate = 7;
+    string desc = 8;
+    uint32 view = 9;
+    uint32 duration = 10;
+    Owner owner = 11;
+    uint32 reply = 12;
+    uint32 favorite = 13;
+    uint32 like = 14;
+    uint32 coin = 15;
+    uint32 share = 16;
+    string create_time = 17;
+    uint32 size = 18;
+}
+
+message BannerMo {
+    string id = 1;
+    uint32 sticky = 2;
+    string type = 3;
+    string title = 4;
+    string subtitle = 5;
+    string url = 6;
+    string cover = 7;
+    string create_time = 8;
+}
+
+message CategoryMo {
+    string name = 1;
+    uint32 count = 2;
+}
+
+message ListHomeMoResponse {
+    repeated BannerMo banner_list = 1;
+    repeated CategoryMo category_list = 2;
+    repeated VideoMo video_list = 3;
+}
+
+service AppviewService {
+    rpc ListHomeMo(ListHomeMoRequest) returns (ListHomeMoResponse);
+}
