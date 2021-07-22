@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package news.v1;
+
+option go_package = "./;v1";
+
+message NewsCategoryDetail {
+    int64 ArticleId = 1;
+    string Title = 2;
+    string FromName = 3;
+    int64 CreateTime = 4;
+    string Intro = 5;
+    int64 AuthorId = 6;
+    int32 Status = 7;
+    string RowPicUrl = 8;
+    string ColPicUrl = 9;
+    string PageUrl = 10;
+    int64 AuthorUid = 11;
+    string Cover = 12;
+    string Nickname = 13;
+    int64 MoodAmount = 14;
+    int64 CommentAmount = 15;
+    int64 TagId = 16;
+}
+
+message NewsCategory {
+    int64 tag_id = 1;
+    string tag_name = 2;
+}
+
+message ListNewsCategoryDetailRequest {
+    int32 tag_id = 1; 
+    int32 sort = 2; // 0:人气排序 1:更新排序
+    int32 limit = 3;
+    int32 offset = 4;
+}
+
+message ListNewsCategoryDetailResponse {
+    repeated NewsCategoryDetail details = 1;
+}
+
+message ListNewsCategoryRequest {
+
+}
+
+message ListNewsCategoryResponse {
+
+}
+
+service NewsService {
+    rpc ListNewsCategoryDetail(ListNewsCategoryDetailRequest) returns (ListNewsCategoryDetailResponse);
+    rpc ListNewsCategory(ListNewsCategoryRequest) returns (ListNewsCategoryResponse);
+}
