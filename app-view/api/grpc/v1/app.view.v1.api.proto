@@ -32,7 +32,7 @@ message VideoMo {
     uint32 like = 14;
     uint32 coin = 15;
     uint32 share = 16;
-    string create_time = 17;
+    string create_time = 17; // TODO 怎么是字符串?
     uint32 size = 18;
 }
 
