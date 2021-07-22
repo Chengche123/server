@@ -35,7 +35,7 @@ func (e *ErrorInterceptor) warpHandler(handler server.HandlerFunc) server.Handle
 			if ok {
 
 				httpCode := runtime.HTTPStatusFromCode(s.Code())
-				return merrors.New("", s.Message(), int32(httpCode))
+				return merrors.New("TODO", s.Message(), int32(httpCode))
 			}
 
 			e.logger.Info("get a invalid grpc error, please repaire", zap.String("invalid err", err.Error()))
