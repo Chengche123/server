@@ -4,14 +4,14 @@ import (
 	"app-view/dao"
 	grpcServer "app-view/server/grpc"
 	grpcService "app-view/service/grpc"
-	comicsrvpb "comic-service/api/grpc/v1"
-	comicserver "comic-service/server/grpc"
 	"os"
 	"os/signal"
 	zlog "share/log/zap"
 	"syscall"
 
 	"time"
+
+	"go.uber.org/zap"
 )
 
 var (
@@ -27,10 +27,12 @@ func main() {
 		return
 	}
 
-	service.ComicRepository = &dao.ComicRepository{
-		ComicService: comicsrvpb.NewComicService(comicserver.ServiceName, server.Client()),
+	repo, err := dao.NewComicRepository(server)
+	if err != nil {
+		zlog.Logger.Info("", zap.Error(err))
+		return
 	}
-
+	service.ComicRepository = repo
 	go func() {
 		err := server.Run()
 		if err != nil {
