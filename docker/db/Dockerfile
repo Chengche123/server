@@ -1,5 +1,14 @@
-FROM mysql:8.0.24
+FROM mysql:5.7
 LABEL maintainer="chengche123"
-ENV MYSQL_ROOT_PASSWORD root
+# RUN
 
-COPY user_account.sql /docker-entrypoint-initdb.d/
+ENV MYSQL_ROOT_PASSWORD root
+ENV MYSQL_DATABASE comic
+# EXPOSE
+# VOLUME
+
+COPY bak-comic-20210723.sql /docker-entrypoint-initdb.d/
+
+# WORKDIR
+# CMD
+# ENTRYPOINT
