@@ -4,6 +4,7 @@ import (
 	pb "app-view/api/grpc/v1"
 	comicsrvpb "comic-service/api/grpc/v1"
 	newsgrpcpb "news-service/api/grpc/v1"
+	static "share/static/url"
 
 	"strconv"
 )
@@ -16,7 +17,7 @@ func convertNewsToBanner(news *newsgrpcpb.NewsCategoryDetail) *pb.BannerMo {
 	res.Title = news.Title
 	res.Subtitle = news.Intro
 	res.Url = news.PageUrl
-	res.Cover = news.RowPicUrl
+	res.Cover = static.ConverURL(news.RowPicUrl) // 转本服务器
 	res.CreateTime = strconv.Itoa(int(news.CreateTime))
 
 	return res
@@ -24,7 +25,7 @@ func convertNewsToBanner(news *newsgrpcpb.NewsCategoryDetail) *pb.BannerMo {
 
 func convertSpecialToBanner(s *comicsrvpb.ComicSpecial) *pb.BannerMo {
 	r := new(pb.BannerMo)
-	r.Cover = s.SmallCover
+	r.Cover = static.ConverURL(s.SmallCover) // 转本服务器
 	r.Title = s.Title
 	r.Id = strconv.Itoa(int(s.Id))
 	r.Subtitle = s.ShortTitle
@@ -40,7 +41,7 @@ func convertComicCategoryDetailToFeedComic(d *comicsrvpb.ComicCategoryDetail) *p
 	r := new(pb.FeedComicMo)
 
 	r.Authors = d.Authors
-	r.Cover = d.Cover
+	r.Cover = static.ConverURL(d.Cover) // 转本服务器
 	r.Id = int32(d.Id)
 	r.LastUpdatetime = int32(d.LastUpdatetime)
 	r.Num = int32(d.Num)
