@@ -12,11 +12,14 @@ func (r *ComicRepository) FindCategoryDetail(types string, sort, offset, limit i
 
 	tx := r.Gorm.Limit(limit).Offset(offset).Where("types like ?", types)
 
-	if sort == 0 {
+	switch sort {
+	case 0:
 		tx.Order("num DESC")
-	} else if sort == 1 {
+	case 1:
 		tx.Order("last_updatetime DESC")
-	} else {
+	case 2:
+		tx.Order("RAND()")
+	default:
 		return nil, fmt.Errorf("invalid sort: %d", sort)
 	}
 

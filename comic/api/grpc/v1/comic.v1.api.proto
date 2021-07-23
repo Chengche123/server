@@ -64,7 +64,7 @@ message ListComicDetailResponse {
 
 message ListComicCategoryDetailRequest {
     string type = 1; // TODO: 更改为tag_ids
-    int32 sort = 2; // 0:人气排序 1:更新排序
+    int32 sort = 2; // 0:人气排序 1:更新排序 2:feed
     int32 limit = 3;
     int32 offset = 4;
 }

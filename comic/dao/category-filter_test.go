@@ -14,5 +14,5 @@ func TestComicRepository_FindComicCategoryFilter(t *testing.T) {
 		return
 	}
 
-	t.Log(res)
+	t.Logf("%#v\n", res)
 }
