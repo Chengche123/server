@@ -35,3 +35,18 @@ func convertSpecialToBanner(s *comicsrvpb.ComicSpecial) *pb.BannerMo {
 
 	return r
 }
+
+func convertComicCategoryDetailToFeedComic(d *comicsrvpb.ComicCategoryDetail) *pb.FeedComicMo {
+	r := new(pb.FeedComicMo)
+
+	r.Authors = d.Authors
+	r.Cover = d.Cover
+	r.Id = int32(d.Id)
+	r.LastUpdatetime = int32(d.LastUpdatetime)
+	r.Num = int32(d.Num)
+	r.Status = d.Status
+	r.Title = d.Title
+	r.Types = d.Types
+
+	return r
+}

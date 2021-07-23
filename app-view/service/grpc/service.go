@@ -11,6 +11,7 @@ import (
 type ComicRepository interface {
 	ListBannerMo(ctx context.Context) ([]*pb.BannerMo, error)
 	ListCategoryMo(ctx context.Context) ([]*pb.CategoryMo, error)
+	ListFeedComicMo(ctx context.Context, categoryName string, pageIndex, pageSize int) ([]*pb.FeedComicMo, error)
 }
 
 type AppviewService struct {
@@ -18,18 +19,27 @@ type AppviewService struct {
 }
 
 func (s *AppviewService) ListHomeMo(ctx context.Context, req *pb.ListHomeMoRequest, res *pb.ListHomeMoResponse) error {
-	banners, err := s.ComicRepository.ListBannerMo(ctx)
+	if req.CategoryName == "推荐" {
+		banners, err := s.ComicRepository.ListBannerMo(ctx)
+		if err != nil {
+			return status.Error(codes.NotFound, err.Error())
+		}
+		res.BannerList = banners
+
+		cates, err := s.ComicRepository.ListCategoryMo(ctx)
+		if err != nil {
+			return status.Error(codes.NotFound, err.Error())
+		}
+
+		res.CategoryList = cates
+	}
+
+	fcs, err := s.ComicRepository.ListFeedComicMo(ctx, req.CategoryName, int(req.PageIndex), int(req.PageSize))
 	if err != nil {
 		return status.Error(codes.NotFound, err.Error())
 	}
 
-	cates, err := s.ComicRepository.ListCategoryMo(ctx)
-	if err != nil {
-		return status.Error(codes.NotFound, err.Error())
-	}
-
-	res.BannerList = banners
-	res.CategoryList = cates
+	res.ComicList = fcs
 
 	return nil
 }

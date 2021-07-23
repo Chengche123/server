@@ -6,7 +6,9 @@ option go_package = "./;v1";
 
 
 message ListHomeMoRequest {
-
+  string category_name = 1;
+  int32 page_index = 2;
+  int32 page_size = 3;
 }
 
 // message Owner {
@@ -16,20 +18,14 @@ message ListHomeMoRequest {
 // }
 
 message FeedComicMo {
-    int64 Id = 1;
-    string Title = 2;
-  //  int64 Direction = 3;  
-  //  uint64 Islong = 4;  
-    string Cover = 5;
-    string Description = 6;
-    int64 LastUpdatetime = 7;
-    string LastUpdateChapterName = 8;
-  //  string FirstLetter = 9;
-  //  string ComicPy = 10;
-    int64 HotNum = 11;
-    int64 HitNum = 12;
-  //  int64 LastUpdateChapterId = 13;
-    int64 SubscribeNum = 14;
+    int32 id = 1;
+    string title = 2;
+    string authors = 3;
+    string status = 4;
+    string cover = 5;
+    string types = 6;
+    int32 last_updatetime = 7;
+    int32 num = 8;
 }
 
 // message VideoMo {
