@@ -9,9 +9,10 @@ import (
 func GetEnvOrDefault(env string, def string) string {
 	v, ok := os.LookupEnv(env)
 	if !ok {
-		log.Printf("cannot find %s, use default value %s", env, def)
+		log.Printf("cannot find %s, use default value %s\n", env, def)
 		return def
 	}
+	log.Printf("%s: %s\n", env, v)
 
 	return v
 }

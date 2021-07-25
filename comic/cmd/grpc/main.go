@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	mysqlDBAddr  = env.FormatEnvOrDefault("root:root@tcp(%s)/comic", "COMIC_MYSQL_ADDR", config.DefaultMySqlAddr)
+	mysqlDBAddr  = env.FormatEnvOrDefault("%s", "COMIC_MYSQL_DSN", config.DefaultMysqlDSN)
 	graceTimeout = time.Second * 3
 )
 

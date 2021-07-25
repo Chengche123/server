@@ -1,8 +1,13 @@
 FROM alpine:3.7
 LABEL maintainer="chengche123"
+# RUN
 
-COPY main.out /service/
+# ENV
+# EXPOSE
+# VOLUME
 
-# EXPOSE port
+COPY main.out /service/ 
 
+# WORKDIR
+# CMD
 ENTRYPOINT ["/service/main.out"]
