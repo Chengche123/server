@@ -8,7 +8,7 @@ import (
 )
 
 func TestFoo(t *testing.T) {
-	var obj CategoryDetail
+	var obj ComicChapter
 
 	fuzz.New().Fuzz(&obj)
 

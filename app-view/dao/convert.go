@@ -51,3 +51,24 @@ func convertComicCategoryDetailToFeedComic(d *comicsrvpb.ComicCategoryDetail) *p
 
 	return r
 }
+
+func convertComicDetail(d *comicsrvpb.ComicDetail) *pb.ComicDetail {
+	r := new(pb.ComicDetail)
+
+	r.ComicPy = d.ComicPy
+	r.Cover = static.ConverURL(d.Cover) // 转本服务器
+	r.Description = d.Description
+	r.Direction = int32(d.Direction)
+	r.FirstLetter = d.FirstLetter
+	r.HitNum = int32(d.HitNum)
+	r.HotNum = int32(d.HotNum)
+	r.Id = int32(d.Id)
+	r.Islong = int32(d.Islong)
+	r.LastUpdateChapterId = int32(d.LastUpdateChapterId)
+	r.LastUpdateChapterName = d.LastUpdateChapterName
+	r.LastUpdatetime = int32(d.LastUpdatetime)
+	r.SubscribeNum = int32(d.SubscribeNum)
+	r.Title = d.Title
+
+	return r
+}

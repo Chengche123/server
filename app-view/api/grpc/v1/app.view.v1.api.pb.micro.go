@@ -43,6 +43,7 @@ func NewAppviewServiceEndpoints() []*api.Endpoint {
 
 type AppviewService interface {
 	ListHomeMo(ctx context.Context, in *ListHomeMoRequest, opts ...client.CallOption) (*ListHomeMoResponse, error)
+	ListComicDetail(ctx context.Context, in *ListComicDetailRequest, opts ...client.CallOption) (*ListComicDetailResponse, error)
 }
 
 type appviewService struct {
@@ -67,15 +68,27 @@ func (c *appviewService) ListHomeMo(ctx context.Context, in *ListHomeMoRequest, 
 	return out, nil
 }
 
+func (c *appviewService) ListComicDetail(ctx context.Context, in *ListComicDetailRequest, opts ...client.CallOption) (*ListComicDetailResponse, error) {
+	req := c.c.NewRequest(c.name, "AppviewService.ListComicDetail", in)
+	out := new(ListComicDetailResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for AppviewService service
 
 type AppviewServiceHandler interface {
 	ListHomeMo(context.Context, *ListHomeMoRequest, *ListHomeMoResponse) error
+	ListComicDetail(context.Context, *ListComicDetailRequest, *ListComicDetailResponse) error
 }
 
 func RegisterAppviewServiceHandler(s server.Server, hdlr AppviewServiceHandler, opts ...server.HandlerOption) error {
 	type appviewService interface {
 		ListHomeMo(ctx context.Context, in *ListHomeMoRequest, out *ListHomeMoResponse) error
+		ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error
 	}
 	type AppviewService struct {
 		appviewService
@@ -90,4 +103,8 @@ type appviewServiceHandler struct {
 
 func (h *appviewServiceHandler) ListHomeMo(ctx context.Context, in *ListHomeMoRequest, out *ListHomeMoResponse) error {
 	return h.AppviewServiceHandler.ListHomeMo(ctx, in, out)
+}
+
+func (h *appviewServiceHandler) ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error {
+	return h.AppviewServiceHandler.ListComicDetail(ctx, in, out)
 }

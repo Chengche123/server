@@ -71,6 +71,52 @@ message ListHomeMoResponse {
     repeated FeedComicMo comic_list = 3;
 }
 
+message ListComicDetailRequest {
+    repeated int32 comic_ids = 1;
+}
+
+message ListComicDetailResponse {
+    repeated ComicDetail comics = 1;
+}
+
+message Chapter {
+    uint32 ChapterId = 1;
+    string ChapterTitle = 2;
+    uint32 Updatetime = 3;
+    uint32 Filesize = 4;
+    uint32 ChapterOrder = 5;
+}
+
+message Chapters {
+    string Title = 1;
+    repeated Chapter Data = 2;
+}
+
+message ComicDetail {
+    int32 Id = 1;
+    string Title = 2;
+    int32 Direction = 3;
+    int32 Islong = 4;
+    string Cover = 5;
+    string Description = 6;
+    int32 LastUpdatetime = 7;
+    string LastUpdateChapterName = 8;
+    string FirstLetter = 9;
+    string ComicPy = 10;
+    int32 HotNum = 11;
+    int32 HitNum = 12;
+    int32 LastUpdateChapterId = 13;
+    int32 SubscribeNum = 14;
+
+    string authors = 15;
+    string status = 16;
+    string types = 17;
+
+    repeated Chapters Chapters = 18;
+}
+
+
 service AppviewService {
     rpc ListHomeMo(ListHomeMoRequest) returns (ListHomeMoResponse);
+    rpc ListComicDetail (ListComicDetailRequest) returns (ListComicDetailResponse);
 }

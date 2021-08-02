@@ -12,6 +12,7 @@ type ComicRepository interface {
 	ListBannerMo(ctx context.Context) ([]*pb.BannerMo, error)
 	ListCategoryMo(ctx context.Context) ([]*pb.CategoryMo, error)
 	ListFeedComicMo(ctx context.Context, categoryName string, pageIndex, pageSize int) ([]*pb.FeedComicMo, error)
+	ListComicDetail(ctx context.Context, comicIds []int32) ([]*pb.ComicDetail, error)
 }
 
 type AppviewService struct {
@@ -40,6 +41,17 @@ func (s *AppviewService) ListHomeMo(ctx context.Context, req *pb.ListHomeMoReque
 	}
 
 	res.ComicList = fcs
+
+	return nil
+}
+
+func (s *AppviewService) ListComicDetail(ctx context.Context, req *pb.ListComicDetailRequest, res *pb.ListComicDetailResponse) error {
+	rs, err := s.ComicRepository.ListComicDetail(ctx, req.ComicIds)
+	if err != nil {
+		return status.Error(codes.NotFound, err.Error())
+	}
+
+	res.Comics = rs
 
 	return nil
 }

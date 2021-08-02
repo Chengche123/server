@@ -2,7 +2,6 @@ package dao
 
 import (
 	config "share/config/database"
-	"share/database/gorm"
 
 	"testing"
 )
@@ -23,12 +22,10 @@ func TestGetComicInfos(t *testing.T) {
 }
 
 func newComicRepository() *ComicRepository {
-	db, err := gorm.NewMysqlGormByDSN(config.DefaultMysqlDSN)
+	db, err := NewComicRepository(config.DefaultMysqlDSN)
 	if err != nil {
 		panic(err)
 	}
 
-	return &ComicRepository{
-		Gorm: db,
-	}
+	return db
 }

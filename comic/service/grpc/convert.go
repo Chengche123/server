@@ -91,3 +91,36 @@ func newComicSpecial(mos []model.ComicSpecial) []*pb.ComicSpecial {
 
 	return res
 }
+
+func newCategoryComicDetail(m *model.CategoryDetail) *pb.ComicCategoryDetail {
+	r := new(pb.ComicCategoryDetail)
+
+	r.Authors = m.Authors
+	r.Cover = m.Cover
+	r.Id = int64(m.ID)
+	r.LastUpdatetime = int64(m.LastUpdatetime)
+	r.Num = int64(m.Num)
+	r.Status = m.Status
+	r.Title = m.Title
+	r.Types = m.Types
+
+	return r
+}
+
+func newComicChapterDetail(s *model.ComicChapter) *pb.ChapterDetail {
+	r := new(pb.ChapterDetail)
+
+	r.Chapterid = int32(s.Chapterid)
+	r.Chapterorder = int32(s.Chapterorder)
+	r.Chaptertitle = s.Chaptertitle
+	r.ComicId = int32(s.ComicId)
+	r.CommentCount = int32(s.CommentCount)
+	r.Direction = int32(s.Direction)
+	r.Filesize = int32(s.Filesize)
+	r.PageUrl = s.PageUrl
+	r.Picnum = int32(s.Picnum)
+	r.Title = s.Title
+	r.Updatetime = int32(s.Updatetime)
+
+	return r
+}

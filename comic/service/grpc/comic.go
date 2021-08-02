@@ -14,6 +14,8 @@ type ComicRepository interface {
 	FindCategoryDetail(types string, sort, offset, limit int) ([]model.CategoryDetail, error)
 	FindComicCategoryFilter() ([]model.ComicCategoryFilter, error)
 	FindComicSpecial(offset, limit int) ([]model.ComicSpecial, error)
+	FindCategoryComicDetail(ids []int32) ([]*model.CategoryDetail, error)
+	FindComicChapters(id int32) ([]model.ComicChapter, error)
 	Close() error
 }
 
@@ -53,10 +55,38 @@ func (s *ComicService) ListComicCategoryFilter(ctx context.Context, req *pb.List
 
 func (s *ComicService) ListComicSpecial(ctx context.Context, req *pb.ListComicSpecialRequest, res *pb.ListComicSpecialResponse) error {
 	mos, err := s.ComicRepository.FindComicSpecial(int(req.Offset), int(req.Limit))
-	if err != nil || len(mos) == 0 {
-		return status.Error(codes.NotFound, "")
+	if err != nil {
+		return status.Error(codes.NotFound, err.Error())
 	}
 
 	res.ComicSpecials = newComicSpecial(mos)
+	return nil
+}
+
+func (s *ComicService) ListCategoryComicDetail(ctx context.Context, req *pb.ListCategoryComicDetailRequest, res *pb.ListCategoryComicDetailResponse) error {
+	mos, err := s.ComicRepository.FindCategoryComicDetail(req.ComicIds)
+	if err != nil {
+		return status.Error(codes.NotFound, err.Error())
+	}
+
+	res.Comics = make([]*pb.ComicCategoryDetail, len(mos))
+	for i := 0; i < len(res.Comics); i++ {
+		res.Comics[i] = newCategoryComicDetail(mos[i])
+	}
+
+	return nil
+}
+
+func (s *ComicService) ListComicChapter(ctx context.Context, req *pb.ListComicChapterRequest, res *pb.ListComicChapterResponse) error {
+	mos, err := s.ComicRepository.FindComicChapters(req.ComicId)
+	if err != nil {
+		return status.Error(codes.NotFound, err.Error())
+	}
+
+	res.Chapters = make([]*pb.ChapterDetail, len(mos))
+	for i := 0; i < len(mos); i++ {
+		res.Chapters[i] = newComicChapterDetail(&mos[i])
+	}
+
 	return nil
 }

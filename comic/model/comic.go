@@ -20,3 +20,7 @@ type ComicCategoryFilter struct {
 type ComicSpecial struct {
 	specialModel.ComicSpecial
 }
+
+type ComicChapter struct {
+	comicModel.ComicChapter
+}

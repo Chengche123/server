@@ -94,11 +94,45 @@ message ListComicSpecialResponse {
     repeated ComicSpecial ComicSpecials = 1 ;
 }
 
+message ListCategoryComicDetailRequest {
+    repeated int32 comic_ids = 1;
+}
+
+message ListCategoryComicDetailResponse {
+    repeated ComicCategoryDetail comics = 1;
+}
+
+message ListComicChapterRequest {
+    int32 comic_id = 1;
+}
+
+message ChapterDetail {
+    int32 Chapterid = 1;
+    string Chaptertitle = 2;
+    int32 Updatetime = 3;
+    int32 Filesize = 4;
+    int32 Chapterorder = 5;
+    string Title = 6;
+    int32 ComicId = 7;
+    int32 Direction = 8;
+    string PageUrl = 9;
+    int32 Picnum = 10;
+    int32 CommentCount = 11;
+}
+
+message ListComicChapterResponse {
+    repeated ChapterDetail chapters = 1;
+}
 
 service ComicService {
     rpc ListComicDetail (ListComicDetailRequest) returns (ListComicDetailResponse);
+    rpc ListCategoryComicDetail (ListCategoryComicDetailRequest) returns (ListCategoryComicDetailResponse);
+
     rpc ListComicCategoryDetail (ListComicCategoryDetailRequest) returns (ListComicCategoryDetailResponse);
     rpc ListComicCategoryFilter(ListComicCategoryFilterRequest) returns(ListComicCategoryFilterResponse);
+    
     rpc ListComicSpecial(ListComicSpecialRequest) returns(ListComicSpecialResponse);
+
+    rpc ListComicChapter(ListComicChapterRequest) returns(ListComicChapterResponse);
 }
 

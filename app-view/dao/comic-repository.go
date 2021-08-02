@@ -22,6 +22,10 @@ var (
 	ErrComicServer = errors.New("comic service error")
 )
 
+func formatErrComicServer(err error) error {
+	return fmt.Errorf("%v: %v", ErrComicServer, err)
+}
+
 type ComicRepository struct {
 	ComicService comicsrvpb.ComicService
 	NewsService  newsgrpcpb.NewsService
@@ -37,7 +41,7 @@ func NewComicRepository(service micro.Service) (*ComicRepository, error) {
 func (r *ComicRepository) ListCategoryMo(ctx context.Context) ([]*pb.CategoryMo, error) {
 	cc, err := r.ComicService.ListComicCategoryFilter(ctx, &comicsrvpb.ListComicCategoryFilterRequest{})
 	if err != nil {
-		return nil, fmt.Errorf("%v: %v", ErrComicServer, err)
+		return nil, formatErrComicServer(err)
 	}
 
 	res := make([]*pb.CategoryMo, 1)
@@ -78,7 +82,7 @@ func (r *ComicRepository) ListBannerMo(ctx context.Context) ([]*pb.BannerMo, err
 	specials := comicSpecial.ComicSpecials
 	res[0] = convertSpecialToBanner(specials[0])
 
-	// 依次放 动画(1) 漫画(2) 轻小说(3)和 美图(8)
+	// 依次放新闻 动画(1) 漫画(2) 轻小说(3)和 美图(8)
 	tids := make(chan int, 4)
 	for _, i := range []int{1, 2, 3, 8} {
 		tids <- i
@@ -154,12 +158,74 @@ func (r *ComicRepository) ListFeedComicMo(ctx context.Context, categoryName stri
 		Sort:   2, // feed
 	})
 	if err != nil {
-		return nil, fmt.Errorf("%v: %v", ErrComicServer, err)
+		return nil, formatErrComicServer(err)
 	}
 
 	res := make([]*pb.FeedComicMo, 0)
 	for _, v := range srs.Details {
 		res = append(res, convertComicCategoryDetailToFeedComic(v))
+	}
+
+	return res, nil
+}
+
+func (r *ComicRepository) ListComicDetail(ctx context.Context, comicIds []int32) ([]*pb.ComicDetail, error) {
+	type outt struct {
+		coms *comicsrvpb.ListCategoryComicDetailResponse
+		err  error
+	}
+	waitChan := make(chan *outt, 1)
+
+	go func() {
+		r, err := r.ComicService.ListCategoryComicDetail(ctx, &comicsrvpb.ListCategoryComicDetailRequest{
+			ComicIds: comicIds,
+		})
+		waitChan <- &outt{
+			coms: r,
+			err:  err,
+		}
+	}()
+
+	cs, err := r.ComicService.ListComicDetail(ctx, &comicsrvpb.ListComicDetailRequest{
+		ComicIds: func() []int64 {
+			rs := make([]int64, 0, len(comicIds))
+			for _, v := range comicIds {
+				rs = append(rs, int64(v))
+			}
+			return rs
+		}(),
+	})
+
+	if err != nil {
+		return nil, formatErrComicServer(err)
+	}
+
+	pcds := make([]*pb.ComicDetail, 0, len(cs.Comics))
+	for _, v := range cs.Comics {
+		pcds = append(pcds, convertComicDetail(v))
+	}
+
+	gr := <-waitChan
+	if gr.err != nil {
+		return nil, formatErrComicServer(err)
+	}
+
+	m1 := map[int32]int{}
+	for i, v := range gr.coms.Comics {
+		m1[int32(v.Id)] = i
+	}
+
+	res := make([]*pb.ComicDetail, 0)
+	for _, v := range pcds {
+		i, ok := m1[v.Id]
+		if ok {
+			tmp := gr.coms.Comics[i]
+			v.Authors = tmp.Authors
+			v.Types = tmp.Types
+			v.Status = tmp.Status
+
+			res = append(res, v)
+		}
 	}
 
 	return res, nil

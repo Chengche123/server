@@ -8,7 +8,7 @@ import (
 )
 
 func TestFoo(t *testing.T) {
-	var obj ListHomeMoRequest
+	var obj ComicDetail
 
 	fuzz.New().Fuzz(&obj)
 
