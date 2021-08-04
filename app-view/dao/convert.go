@@ -72,3 +72,30 @@ func convertComicDetail(d *comicsrvpb.ComicDetail) *pb.ComicDetail {
 
 	return r
 }
+
+func convertComicChapters(ss []*comicsrvpb.ChapterDetail) []*pb.Chapters {
+	m := map[string][]*comicsrvpb.ChapterDetail{}
+	for _, v := range ss {
+		m[v.Title] = append(m[v.Title], v)
+	}
+
+	ds := make([]*pb.Chapters, 0, len(m))
+	for k, v := range m {
+		d := new(pb.Chapters)
+		d.Title = k
+		for _, v1 := range v {
+			d1 := new(pb.Chapter)
+			d1.ChapterId = v1.Chapterid
+			d1.ChapterOrder = v1.Chapterorder
+			d1.ChapterTitle = v1.Chaptertitle
+			d1.Filesize = v1.Filesize
+			d1.Updatetime = v1.Updatetime
+
+			d.Data = append(d.Data, d1)
+		}
+
+		ds = append(ds, d)
+	}
+
+	return ds
+}

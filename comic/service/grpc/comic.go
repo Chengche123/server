@@ -68,6 +68,9 @@ func (s *ComicService) ListCategoryComicDetail(ctx context.Context, req *pb.List
 	if err != nil {
 		return status.Error(codes.NotFound, err.Error())
 	}
+	if len(mos) == 0 {
+		return status.Error(codes.NotFound, "未找到任何资源!")
+	}
 
 	res.Comics = make([]*pb.ComicCategoryDetail, len(mos))
 	for i := 0; i < len(res.Comics); i++ {

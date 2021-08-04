@@ -13,6 +13,7 @@ go 1.16
 
 require (
 	comic-service v0.0.0-00010101000000-000000000000
+	github.com/go-kratos/kratos v1.0.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/gofuzz v1.2.0
 	github.com/micro/go-micro/v2 v2.9.1

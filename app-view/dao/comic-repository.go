@@ -14,6 +14,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/go-kratos/kratos/pkg/sync/errgroup"
 	"github.com/micro/go-micro/v2"
 	"go.uber.org/zap"
 )
@@ -170,59 +171,118 @@ func (r *ComicRepository) ListFeedComicMo(ctx context.Context, categoryName stri
 }
 
 func (r *ComicRepository) ListComicDetail(ctx context.Context, comicIds []int32) ([]*pb.ComicDetail, error) {
-	type outt struct {
-		coms *comicsrvpb.ListCategoryComicDetailResponse
-		err  error
-	}
-	waitChan := make(chan *outt, 1)
+	eg := errgroup.WithCancel(ctx)
+	result := make([]struct {
+		Ret interface{}
+		Err error
+	}, 3)
 
-	go func() {
+	// 漫画详情1
+	eg.Go(func(ctx context.Context) error {
 		r, err := r.ComicService.ListCategoryComicDetail(ctx, &comicsrvpb.ListCategoryComicDetailRequest{
 			ComicIds: comicIds,
 		})
-		waitChan <- &outt{
-			coms: r,
-			err:  err,
+		result[0].Ret = r
+		result[0].Err = err
+		return err
+	})
+	// 漫画详情2
+	eg.Go(func(ctx context.Context) error {
+		r, err := r.ComicService.ListComicDetail(ctx, &comicsrvpb.ListComicDetailRequest{
+			ComicIds: func() []int64 {
+				rs := make([]int64, 0, len(comicIds))
+				for _, v := range comicIds {
+					rs = append(rs, int64(v))
+				}
+				return rs
+			}(),
+		})
+		result[1].Ret = r
+		result[1].Err = err
+		return err
+	})
+	// 漫画章节
+	eg.Go(func(ctx context.Context) error {
+		inchan := make(chan int32, len(comicIds))
+		for _, v := range comicIds {
+			inchan <- v
 		}
-	}()
+		close(inchan)
+		outchan := make(chan *comicsrvpb.ListComicChapterResponse, 1)
 
-	cs, err := r.ComicService.ListComicDetail(ctx, &comicsrvpb.ListComicDetailRequest{
-		ComicIds: func() []int64 {
-			rs := make([]int64, 0, len(comicIds))
-			for _, v := range comicIds {
-				rs = append(rs, int64(v))
-			}
-			return rs
-		}(),
+		var wg sync.WaitGroup
+		concur := 16
+		if concur > len(comicIds) {
+			concur = len(comicIds)
+		}
+
+		for i := 0; i < concur; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				for v := range inchan {
+					r, err := r.ComicService.ListComicChapter(ctx, &comicsrvpb.ListComicChapterRequest{
+						ComicId: v,
+					})
+					if err != nil {
+						continue
+					}
+
+					outchan <- r
+				}
+			}()
+		}
+
+		go func() {
+			wg.Wait()
+			close(outchan)
+		}()
+
+		rs := make([]*comicsrvpb.ListComicChapterResponse, 0, len(comicIds))
+		for v := range outchan {
+			rs = append(rs, v)
+		}
+
+		result[2].Ret = rs
+		result[2].Err = nil
+		return nil
 	})
 
-	if err != nil {
+	if err := eg.Wait(); err != nil {
 		return nil, formatErrComicServer(err)
 	}
 
-	pcds := make([]*pb.ComicDetail, 0, len(cs.Comics))
-	for _, v := range cs.Comics {
+	ccd := result[0].Ret.(*comicsrvpb.ListCategoryComicDetailResponse)
+	cd := result[1].Ret.(*comicsrvpb.ListComicDetailResponse)
+	ccs := result[2].Ret.([]*comicsrvpb.ListComicChapterResponse)
+
+	pcds := make([]*pb.ComicDetail, 0, len(cd.Comics))
+	for _, v := range cd.Comics {
 		pcds = append(pcds, convertComicDetail(v))
 	}
 
-	gr := <-waitChan
-	if gr.err != nil {
-		return nil, formatErrComicServer(err)
-	}
-
+	// 漫画id - 索引映射
 	m1 := map[int32]int{}
-	for i, v := range gr.coms.Comics {
+	for i, v := range ccd.Comics {
 		m1[int32(v.Id)] = i
+	}
+	m2 := map[int32]int{}
+	for i, v := range ccs {
+		m2[v.Chapters[0].ComicId] = i
 	}
 
 	res := make([]*pb.ComicDetail, 0)
 	for _, v := range pcds {
-		i, ok := m1[v.Id]
-		if ok {
-			tmp := gr.coms.Comics[i]
-			v.Authors = tmp.Authors
-			v.Types = tmp.Types
-			v.Status = tmp.Status
+		i, ok1 := m1[v.Id]
+		k, ok2 := m2[v.Id]
+		if ok1 && ok2 {
+			ccdItem := ccd.Comics[i]
+			v.Authors = ccdItem.Authors
+			v.Types = ccdItem.Types
+			v.Status = ccdItem.Status
+
+			ccsItem := ccs[k]
+			v.Chapters = convertComicChapters(ccsItem.Chapters)
 
 			res = append(res, v)
 		}

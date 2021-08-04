@@ -80,11 +80,11 @@ message ListComicDetailResponse {
 }
 
 message Chapter {
-    uint32 ChapterId = 1;
+    int32 ChapterId = 1;
     string ChapterTitle = 2;
-    uint32 Updatetime = 3;
-    uint32 Filesize = 4;
-    uint32 ChapterOrder = 5;
+    int32 Updatetime = 3;
+    int32 Filesize = 4;
+    int32 ChapterOrder = 5;
 }
 
 message Chapters {
