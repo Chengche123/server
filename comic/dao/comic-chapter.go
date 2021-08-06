@@ -8,7 +8,7 @@ import (
 func (r *ComicRepository) FindComicChapters(id int32) ([]model.ComicChapter, error) {
 	var rs []model.ComicChapter
 
-	if err := r.DB.Where("comic_id = ?", id).Find(&rs).Error; err != nil {
+	if err := r.DB.Where("comic_id = ?", id).Order("chapterorder DESC").Find(&rs).Error; err != nil {
 		return nil, fmt.Errorf("cannot find comic chapter: %v", err)
 	}
 

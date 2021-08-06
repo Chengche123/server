@@ -115,8 +115,24 @@ message ComicDetail {
     repeated Chapters Chapters = 18;
 }
 
+message ListComicChapterDetailRequest {
+    int32 comic_id = 1;
+    int32 chapter_id = 2;
+}
+
+message ListComicChapterDetailResponse {
+    int32 chapter_id = 1;
+    int32 comic_id = 2;
+    string title = 3;
+    int32 chapter_order = 4;
+    int32 direction = 5;
+    repeated string page_url = 6;
+    int32 picnum = 7;
+    int32 comment_count = 8;
+}
 
 service AppviewService {
     rpc ListHomeMo(ListHomeMoRequest) returns (ListHomeMoResponse);
     rpc ListComicDetail (ListComicDetailRequest) returns (ListComicDetailResponse);
+    rpc ListComicChapterDetail(ListComicChapterDetailRequest) returns(ListComicChapterDetailResponse);
 }

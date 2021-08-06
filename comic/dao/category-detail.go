@@ -12,9 +12,16 @@ import (
 func (r *ComicRepository) FindCategoryDetail(types string, sort, offset, limit int) ([]model.CategoryDetail, error) {
 	var res []model.CategoryDetail
 
-	types = "%" + types + "%"
+	tx := r.Gorm.Limit(limit).Offset(offset)
 
-	tx := r.Gorm.Limit(limit).Offset(offset).Where("types like ?", types)
+	// types == "" 时为推荐
+	if types == "推荐" {
+		tx = tx.Joins("JOIN comic_chapter ON category_detail.id = comic_chapter.comic_id")
+		tx = tx.Distinct("category_detail.*")
+	} else {
+		types = "%" + types + "%"
+		tx = tx.Where("types like ?", types)
+	}
 
 	switch sort {
 	case 0:

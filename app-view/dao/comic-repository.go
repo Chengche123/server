@@ -67,7 +67,7 @@ func (r *ComicRepository) ListCategoryMo(ctx context.Context) ([]*pb.CategoryMo,
 
 // TODO 降级
 func (r *ComicRepository) ListBannerMo(ctx context.Context) ([]*pb.BannerMo, error) {
-	// 动漫专题取三张
+	// 动漫专题取一张
 	comicSpecial, err := r.ComicService.ListComicSpecial(ctx, &comicsrvpb.ListComicSpecialRequest{
 		Offset: 0,
 		Limit:  1,
@@ -147,13 +147,8 @@ func (r *ComicRepository) ListFeedComicMo(ctx context.Context, categoryName stri
 	}
 	offset := pageSize * pageIndex
 
-	var type1 string
-	if categoryName != "推荐" {
-		type1 = categoryName
-	}
-
 	srs, err := r.ComicService.ListComicCategoryDetail(ctx, &comicsrvpb.ListComicCategoryDetailRequest{
-		Type:   type1,
+		Type:   categoryName,
 		Limit:  int32(limit),
 		Offset: int32(offset),
 		Sort:   2, // feed
@@ -268,6 +263,10 @@ func (r *ComicRepository) ListComicDetail(ctx context.Context, comicIds []int32)
 	}
 	m2 := map[int32]int{}
 	for i, v := range ccs {
+		// 注意，这里可能没有章节
+		if len(v.Chapters) == 0 {
+			continue
+		}
 		m2[v.Chapters[0].ComicId] = i
 	}
 
@@ -275,18 +274,46 @@ func (r *ComicRepository) ListComicDetail(ctx context.Context, comicIds []int32)
 	for _, v := range pcds {
 		i, ok1 := m1[v.Id]
 		k, ok2 := m2[v.Id]
-		if ok1 && ok2 {
+
+		// 降级，因为没爬取全部漫画的章节信息，所以返回的漫画可能没有章节信息
+		if ok2 {
+			ccsItem := ccs[k]
+			v.Chapters = convertComicChapters(ccsItem.Chapters)
+		}
+
+		if ok1 {
 			ccdItem := ccd.Comics[i]
 			v.Authors = ccdItem.Authors
 			v.Types = ccdItem.Types
 			v.Status = ccdItem.Status
-
-			ccsItem := ccs[k]
-			v.Chapters = convertComicChapters(ccsItem.Chapters)
 
 			res = append(res, v)
 		}
 	}
 
 	return res, nil
+}
+
+func (r *ComicRepository) ListComicChapterDetail(ctx context.Context, comicId, chapterId int32) (*pb.ListComicChapterDetailResponse, error) {
+	// TODO 加入redis缓存, 这里获取漫画的全部章节, 而实际上只需要一章, 太亏了
+	res, err := r.ComicService.ListComicChapter(ctx, &comicsrvpb.ListComicChapterRequest{
+		ComicId: comicId,
+	})
+	if err != nil {
+		return nil, formatErrComicServer(err)
+	}
+
+	if len(res.Chapters) == 0 {
+		return nil, formatErrComicServer(fmt.Errorf("没有找到漫画章节"))
+	}
+
+	mo := new(comicsrvpb.ChapterDetail)
+	for _, v := range res.Chapters {
+		if v.Chapterid == chapterId {
+			mo = v
+			break
+		}
+	}
+
+	return convertComicChapterDetail(mo)
 }

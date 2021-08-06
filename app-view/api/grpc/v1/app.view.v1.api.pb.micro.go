@@ -44,6 +44,7 @@ func NewAppviewServiceEndpoints() []*api.Endpoint {
 type AppviewService interface {
 	ListHomeMo(ctx context.Context, in *ListHomeMoRequest, opts ...client.CallOption) (*ListHomeMoResponse, error)
 	ListComicDetail(ctx context.Context, in *ListComicDetailRequest, opts ...client.CallOption) (*ListComicDetailResponse, error)
+	ListComicChapterDetail(ctx context.Context, in *ListComicChapterDetailRequest, opts ...client.CallOption) (*ListComicChapterDetailResponse, error)
 }
 
 type appviewService struct {
@@ -78,17 +79,29 @@ func (c *appviewService) ListComicDetail(ctx context.Context, in *ListComicDetai
 	return out, nil
 }
 
+func (c *appviewService) ListComicChapterDetail(ctx context.Context, in *ListComicChapterDetailRequest, opts ...client.CallOption) (*ListComicChapterDetailResponse, error) {
+	req := c.c.NewRequest(c.name, "AppviewService.ListComicChapterDetail", in)
+	out := new(ListComicChapterDetailResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for AppviewService service
 
 type AppviewServiceHandler interface {
 	ListHomeMo(context.Context, *ListHomeMoRequest, *ListHomeMoResponse) error
 	ListComicDetail(context.Context, *ListComicDetailRequest, *ListComicDetailResponse) error
+	ListComicChapterDetail(context.Context, *ListComicChapterDetailRequest, *ListComicChapterDetailResponse) error
 }
 
 func RegisterAppviewServiceHandler(s server.Server, hdlr AppviewServiceHandler, opts ...server.HandlerOption) error {
 	type appviewService interface {
 		ListHomeMo(ctx context.Context, in *ListHomeMoRequest, out *ListHomeMoResponse) error
 		ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error
+		ListComicChapterDetail(ctx context.Context, in *ListComicChapterDetailRequest, out *ListComicChapterDetailResponse) error
 	}
 	type AppviewService struct {
 		appviewService
@@ -107,4 +120,8 @@ func (h *appviewServiceHandler) ListHomeMo(ctx context.Context, in *ListHomeMoRe
 
 func (h *appviewServiceHandler) ListComicDetail(ctx context.Context, in *ListComicDetailRequest, out *ListComicDetailResponse) error {
 	return h.AppviewServiceHandler.ListComicDetail(ctx, in, out)
+}
+
+func (h *appviewServiceHandler) ListComicChapterDetail(ctx context.Context, in *ListComicChapterDetailRequest, out *ListComicChapterDetailResponse) error {
+	return h.AppviewServiceHandler.ListComicChapterDetail(ctx, in, out)
 }

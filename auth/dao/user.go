@@ -37,7 +37,8 @@ func (m *UserRepository) FindOrAddUser(userName, password string) (accountID str
 	var userAccount model.UserAccount
 
 	err = m.db.Transaction(func(tx *gorm.DB) error {
-		tx.Where("user_name = ?", userName).Take(&userAccount)
+		// 覆盖索引,不回表
+		tx.Where("user_name = ?", userName).Select("user_name", "password", "id").Take(&userAccount)
 
 		// 找到用户
 		if userAccount.Id != 0 {

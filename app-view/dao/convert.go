@@ -3,6 +3,8 @@ package dao
 import (
 	pb "app-view/api/grpc/v1"
 	comicsrvpb "comic-service/api/grpc/v1"
+	"encoding/json"
+	"fmt"
 	newsgrpcpb "news-service/api/grpc/v1"
 	static "share/static/url"
 
@@ -98,4 +100,29 @@ func convertComicChapters(ss []*comicsrvpb.ChapterDetail) []*pb.Chapters {
 	}
 
 	return ds
+}
+
+func convertComicChapterDetail(mo *comicsrvpb.ChapterDetail) (*pb.ListComicChapterDetailResponse, error) {
+	var pageUrls []string
+	bs := []byte(mo.PageUrl)
+	err := json.Unmarshal(bs, &pageUrls)
+	if err != nil {
+		return nil, formatErrComicServer(fmt.Errorf("invalid PageUrl: %v", err))
+	}
+
+	for i := 0; i < len(pageUrls); i++ {
+		pageUrls[i] = static.ConverURL(pageUrls[i])
+	}
+
+	rp := new(pb.ListComicChapterDetailResponse)
+	rp.ChapterId = mo.Chapterid
+	rp.ChapterOrder = mo.Chapterorder
+	rp.ComicId = mo.ComicId
+	rp.CommentCount = mo.CommentCount
+	rp.Direction = mo.Direction
+	rp.PageUrl = pageUrls
+	rp.Picnum = mo.Picnum
+	rp.Title = mo.Title
+
+	return rp, nil
 }
