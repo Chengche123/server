@@ -2,13 +2,12 @@ package dao
 
 import (
 	"auth-service/model"
-	"fmt"
 	mgorm "share/database/gorm"
-	zlog "share/log/zap"
 	"strconv"
 	"time"
 
-	"go.uber.org/zap"
+	xerrors "github.com/pkg/errors"
+
 	"golang.org/x/crypto/bcrypt"
 
 	"gorm.io/gorm"
@@ -22,7 +21,7 @@ type UserRepository struct {
 func NewUserRepository(dsn string) (*UserRepository, error) {
 	db, err := mgorm.NewMysqlGormByDSN(dsn)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Wrapf(ErrDatabase, "open mysql, dsn = %s, database: [%v]", dsn, err)
 	}
 
 	return &UserRepository{
@@ -45,7 +44,7 @@ func (m *UserRepository) FindOrAddUser(userName, password string) (accountID str
 			// 匹配密码
 			err := bcrypt.CompareHashAndPassword([]byte(userAccount.Password), []byte(password))
 			if err != nil {
-				return fmt.Errorf("invalid password")
+				return xerrors.Wrapf(ErrInvalidPassword, "user_name = %s", userName)
 			}
 
 			return nil
@@ -58,16 +57,11 @@ func (m *UserRepository) FindOrAddUser(userName, password string) (accountID str
 		userAccount.AddTime = time.Now().Unix()
 		userAccount.Status = 1
 		if err := tx.Create(&userAccount).Error; err != nil {
-			return fmt.Errorf("cannot insert a row: %v", err)
+			return xerrors.Wrapf(ErrDatabase, "database: [%v]", err)
 		}
 
 		return nil
 	})
 
-	if err != nil {
-		return "", fmt.Errorf("cannot resolve user: %v", err)
-	}
-
-	zlog.Logger.Info("", zap.Int("accountID", int(userAccount.Id)))
-	return strconv.Itoa(int(userAccount.Id)), nil
+	return strconv.Itoa(int(userAccount.Id)), err
 }

@@ -1,13 +1,14 @@
 package service
 
 import (
+	"auth-service/dao"
 	"context"
-	zlog "share/log/zap"
+	"log"
 	"time"
 
 	authpb "auth-service/api/grpc/v1"
 
-	"go.uber.org/zap"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -30,18 +31,34 @@ func (*AuthService) Login(ctx context.Context, req *authpb.LoginRequest, res *au
 }
 
 func (s *AuthService) UserLogin(ctx context.Context, req *authpb.UserLoginRequest, res *authpb.LoginResponse) error {
-	zlog.Logger.Info("loggin", zap.String("user_name", req.UserName), zap.String("password", req.Password))
-
 	uid, err := s.UserRepository.FindOrAddUser(req.UserName, req.Password)
+
 	if err != nil {
-		return status.Error(codes.Unauthenticated, "密码错误")
+
+		switch errors.Cause(err) {
+
+		case dao.ErrInvalidPassword:
+			return status.Error(codes.Unauthenticated, "invalid password")
+
+		case dao.ErrDatabase:
+			log.Printf("stack trace:\n%+v\n", err) // 数据库错误跟踪
+			return status.Error(codes.Internal, "database error")
+		default:
+			log.Printf("stack trace:\n%+v\n", err) // 未知错误跟踪
+			return status.Error(codes.Internal, "unknown error")
+
+		}
+
 	}
 
 	var expire time.Duration = time.Hour * 2
 
 	tkn, err := s.TokenGenerator.GenerateToken(uid, expire)
 	if err != nil {
-		return status.Error(codes.Unauthenticated, "")
+
+		log.Printf("stack trace:\n%+v\n", err)
+		return status.Error(codes.Unauthenticated, "token generate error")
+
 	}
 
 	res.AccessToken = tkn

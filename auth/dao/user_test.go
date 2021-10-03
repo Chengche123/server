@@ -1,71 +1,102 @@
 package dao
 
 import (
-	"os"
 	config "share/config/database"
 	"testing"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
-var testDsn string
-
-func TestFindOrAddUser(t *testing.T) {
+func TestUserRepository_FindOrAddUser(t *testing.T) {
 	db, err := NewUserRepository(config.DefaultMysqlDSN)
 	if err != nil {
-		panic(err.Error() + " dsn:" + testDsn)
+		t.Fatalf("%+v\n", err)
 	}
+	defer db.Close()
 
-	defer func() {
-		db.Close()
-		time.Sleep(1 * time.Second)
-	}()
-
-	cases := []struct {
-		name     string
+	type args struct {
 		userName string
 		password string
-		want     string
-		wantErr  bool
+	}
+	tests := []struct {
+		name          string
+		m             *UserRepository
+		args          args
+		wantAccountID string
+		wantErr       error
 	}{
 		{
-			name:     "insert new user",
-			userName: "chengche",
-			password: "qwe1234",
-			want:     "1",
-			wantErr:  false,
+			"invalid password",
+			db,
+			args{"newuser1", "newuser0"},
+			"",
+			bcrypt.ErrMismatchedHashAndPassword,
 		},
 		{
-			name:     "invalid password",
-			userName: "chengche",
-			password: "xxxxxx",
-			want:     "",
-			wantErr:  true,
+			"correct password",
+			db,
+			args{"newuser1", "newuser1"},
+			"157",
+			nil,
+		},
+		{
+			"new user",
+			db,
+			args{"newuser2", "newuser2"},
+			"158",
+			nil,
 		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotAccountID, err := tt.m.FindOrAddUser(tt.args.userName, tt.args.password)
 
-	for _, cs := range cases {
-		t.Run(cs.name, func(t *testing.T) {
-			accountId, err := db.FindOrAddUser(cs.userName, cs.password)
-
-			if err != nil && !cs.wantErr {
-				t.Error(err)
+			if errors.Cause(err) != tt.wantErr {
+				t.Errorf("UserRepository.FindOrAddUser() error = [%v], wantErr [%v]", errors.Cause(err), errors.Cause(tt.wantErr))
+				t.Errorf("stack trace:\n %+v\n", err)
+				return
 			}
 
-			if err == nil && cs.wantErr {
-				t.Errorf("want error,got no error")
-			}
-
-			if accountId != cs.want {
-				t.Errorf("resolve user %q:%q,want %q,got %q", cs.userName, cs.password, cs.want, accountId)
+			if gotAccountID != tt.wantAccountID {
+				t.Errorf("UserRepository.FindOrAddUser() = %v, want %v", gotAccountID, tt.wantAccountID)
 			}
 		})
 	}
 }
 
-func TestMain(m *testing.M) {
-	testDsn = "root:root@tcp(127.0.0.1:3306)/mysql?charset=utf8mb4&parseTime=True&loc=Local"
-	os.Exit(m.Run())
-	// os.Exit(test.RunWithMysqlInDocker(m, &testDsn))
+func TestNewUserRepository(t *testing.T) {
+	type args struct {
+		dsn string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr error
+	}{
+		{
+			"correct dsn",
+			args{"root:root@tcp(127.0.0.1:3306)/comic"},
+			nil,
+		},
+		{
+			"invalid dsn",
+			args{"root:root@tcp(127.0.0.1:3306)/comic1"},
+			nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewUserRepository(tt.args.dsn)
+			if errors.Cause(err) != tt.wantErr {
+				t.Errorf("NewUserRepository() errorType = [%T], error = [%v], wantErr [%v]",
+					errors.Cause(err), errors.Cause(err), tt.wantErr)
+
+				t.Errorf("stack trace:\n%+v\n", err)
+				return
+			}
+			got.Close()
+		})
+	}
 }

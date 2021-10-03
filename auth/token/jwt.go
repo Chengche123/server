@@ -1,10 +1,17 @@
 package token
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
+	xerrors "github.com/pkg/errors"
+
 	"github.com/dgrijalva/jwt-go"
+)
+
+var (
+	ErrInvalidKey = errors.New("auth-service/token: invalid key")
+	ErrSigned     = errors.New("auth-service/token: failed to signed")
 )
 
 type JWTTokenGen struct {
@@ -34,12 +41,12 @@ func (j *JWTTokenGen) GenerateToken(accountID string, expireIn time.Duration) (s
 
 	pkey, err := jwt.ParseRSAPrivateKeyFromPEM(j.privateKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse PEM key: %v", err)
+		return "", xerrors.Wrapf(ErrInvalidKey, "jwt: [%v]", err)
 	}
 
 	token, err := text.SignedString(pkey)
 	if err != nil {
-		return "", fmt.Errorf("failed to generator token: %v", err)
+		return "", xerrors.Wrapf(ErrSigned, "jwt: [%v]", err)
 	}
 
 	return token, err
